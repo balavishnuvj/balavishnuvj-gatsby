@@ -2,17 +2,20 @@ import React from "react"
 import { Link, graphql } from "gatsby"
 
 import Bio from "../components/bio"
-import Layout from "../components/layout"
 import SEO from "../components/seo"
 import { rhythm, scale } from "../utils/typography"
 
 const BlogPostTemplate = ({ data, pageContext, location }) => {
+  console.log("LOG: : BlogPostTemplate -> data", data)
+  if (!data.markdownRemark) {
+    return null
+  }
   const post = data.markdownRemark
+
   const siteTitle = data.site.siteMetadata.title
   const { previous, next } = pageContext
-
   return (
-    <Layout location={location} title={siteTitle}>
+    <React.Fragment>
       <SEO
         title={post.frontmatter.title}
         description={post.frontmatter.description || post.excerpt}
@@ -64,21 +67,21 @@ const BlogPostTemplate = ({ data, pageContext, location }) => {
         >
           <li>
             {previous && (
-              <Link to={previous.fields.slug} rel="prev">
+              <Link to={`/blog${previous.fields.slug}`} rel="prev">
                 ← {previous.frontmatter.title}
               </Link>
             )}
           </li>
           <li>
             {next && (
-              <Link to={next.fields.slug} rel="next">
+              <Link to={`/blog${next.fields.slug}`} rel="next">
                 {next.frontmatter.title} →
               </Link>
             )}
           </li>
         </ul>
       </nav>
-    </Layout>
+    </React.Fragment>
   )
 }
 

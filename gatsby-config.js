@@ -2,16 +2,20 @@ module.exports = {
   siteMetadata: {
     title: `Gatsby Starter Blog`,
     author: {
-      name: `Kyle Mathews`,
-      summary: `who lives and works in San Francisco building useful things.`,
+      name: `Balavishnu V J`,
+      summary: `who lives and works in Bangalore India making world a better place by *.`,
     },
     description: `A starter blog demonstrating what Gatsby can do.`,
     siteUrl: `https://gatsby-starter-blog-demo.netlify.app/`,
     social: {
-      twitter: `kylemathews`,
+      email: "hello@balavishnuvj.com",
+      github: "https://github.com/balavishnuvj",
+      linkedin: "https://www.linkedin.com/in/balavishnuvj",
+      twitter: "https://twitter.com/vjbalavishnu",
     },
   },
   plugins: [
+    `gatsby-plugin-styled-components`,
     {
       resolve: `gatsby-source-filesystem`,
       options: {
@@ -74,6 +78,14 @@ module.exports = {
       resolve: `gatsby-plugin-typography`,
       options: {
         pathToConfigModule: `src/utils/typography`,
+      },
+    },
+    {
+      resolve: "gatsby-plugin-react-svg",
+      options: {
+        rule: {
+          include: /assets\/svg/, // See below to configure properly
+        },
       },
     },
     // this (optional) plugin enables Progressive Web App + Offline functionality

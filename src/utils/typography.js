@@ -9,7 +9,12 @@ Wordpress2016.overrideThemeStyles = () => {
   }
 }
 
-delete Wordpress2016.googleFonts
+Wordpress2016.googleFonts = [
+  {
+    name: "Open Sans",
+    styles: ["400", "700"],
+  },
+]
 
 const typography = new Typography(Wordpress2016)
 
