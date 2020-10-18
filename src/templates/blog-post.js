@@ -1,16 +1,23 @@
 import React from "react"
 import { Link, graphql } from "gatsby"
-
+import { MDXRenderer } from "gatsby-plugin-mdx"
 import Bio from "../components/bio"
 import SEO from "../components/seo"
 import { rhythm, scale } from "../utils/typography"
+import styled from "styled-components"
+
+export const BlogSection = styled.section`
+  > blockquote {
+    color: ${props => props.theme.quoteColor};
+  }
+`
 
 const BlogPostTemplate = ({ data, pageContext, location }) => {
   console.log("LOG: : BlogPostTemplate -> data", data)
-  if (!data.markdownRemark) {
+  if (!data.mdx) {
     return null
   }
-  const post = data.markdownRemark
+  const post = data.mdx
 
   const siteTitle = data.site.siteMetadata.title
   const { previous, next } = pageContext
@@ -41,10 +48,9 @@ const BlogPostTemplate = ({ data, pageContext, location }) => {
             {post.frontmatter.date}
           </p>
         </header>
-        <section
-          dangerouslySetInnerHTML={{ __html: post.html }}
-          itemProp="articleBody"
-        />
+        <BlogSection>
+          <MDXRenderer>{post.body}</MDXRenderer>
+        </BlogSection>
         <hr
           style={{
             marginBottom: rhythm(1),
@@ -94,10 +100,10 @@ export const pageQuery = graphql`
         title
       }
     }
-    markdownRemark(fields: { slug: { eq: $slug } }) {
+    mdx(fields: { slug: { eq: $slug } }) {
       id
       excerpt(pruneLength: 160)
-      html
+      body
       frontmatter {
         title
         date(formatString: "MMMM DD, YYYY")

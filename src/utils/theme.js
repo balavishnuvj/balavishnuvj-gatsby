@@ -7,6 +7,7 @@ export const LIGHT_THEME = {
   toggleIcon: "#000000",
   socialIcons: "#363636",
   themeColor: "#ffffff",
+  "quoteColor": "#6c6c6c",
   isDark: false,
 }
 
@@ -18,5 +19,6 @@ export const DARK_THEME = {
   secondaryBackground: "#232323",
   toggleIcon: "#f3f3f3",
   socialIcons: "#e7e7e7",
+  "quoteColor": "#c1c1c1",
   isDark: true,
 }
