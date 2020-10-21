@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useLayoutEffect } from "react"
 import { Link } from "gatsby"
 
 import { rhythm, scale } from "../utils/typography"
@@ -18,12 +18,14 @@ const GlobalStyle = createGlobalStyle`
   body {
     color: ${props => props.theme.textColor};
     background:  ${props => (props.theme.isDark ? "#1f1f1f" : "#f4f3f9")};
+    a {
+      color:  ${props => (props.theme.isDark ? "#80bafe" : "#007acc")};
+    }
     @media (max-width: 699px) {
       
     }
     * {
       font-family: 'Open Sans';
-      font-size: 16px;
       ${
         false &&
         css`
@@ -35,9 +37,15 @@ const GlobalStyle = createGlobalStyle`
 `
 
 const Layout = ({ location, title, children, path }) => {
-  const [theme, setTheme] = useState(() =>
-    localStorage.getItem(THEME_STORAGE_KEY)
-  )
+  const [theme, setTheme] = useState(THEMES.DARK)
+
+  useLayoutEffect(() => {
+    const currentTheme = localStorage.getItem(THEME_STORAGE_KEY)
+    if (currentTheme) {
+      setTheme(currentTheme)
+    }
+  }, [])
+
   const isDarkTheme = theme === THEMES.DARK
 
   function handleToggleTheme() {
@@ -51,7 +59,7 @@ const Layout = ({ location, title, children, path }) => {
 
   useEffect(() => {
     if (theme) {
-      localStorage.setItem(THEME_STORAGE_KEY, theme)
+      window.localStorage.setItem(THEME_STORAGE_KEY, theme)
     }
   }, [theme])
   const themeObj = isDarkTheme ? DARK_THEME : LIGHT_THEME

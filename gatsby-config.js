@@ -1,3 +1,5 @@
+const projects = require("./content/data/projects.json")
+
 module.exports = {
   siteMetadata: {
     title: `Gatsby Starter Blog`,
@@ -13,6 +15,7 @@ module.exports = {
       linkedin: "https://www.linkedin.com/in/balavishnuvj",
       twitter: "https://twitter.com/vjbalavishnu",
     },
+    projects,
   },
   plugins: [
     `gatsby-plugin-styled-components`,
@@ -57,10 +60,10 @@ module.exports = {
     {
       resolve: `gatsby-plugin-google-analytics`,
       options: {
-        //trackingId: `ADD YOUR TRACKING ID HERE`,
+        trackingId: "UA-180744680-1",
       },
     },
-    `gatsby-plugin-feed`,
+    // `gatsby-plugin-feed`,
     {
       resolve: `gatsby-plugin-manifest`,
       options: {

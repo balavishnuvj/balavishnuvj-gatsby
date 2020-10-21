@@ -1,5 +1,5 @@
-import React from "react";
-import styled, { css } from "styled-components";
+import React from "react"
+import styled, { css } from "styled-components"
 
 const Button = styled.button`
   opacity: 0.65;
@@ -20,14 +20,14 @@ const Button = styled.button`
   &:hover, &:focus: {
     opacity: 1;
   }
-`;
+`
 
 const Icon = styled.div`
   position: relative;
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  border: ${(props) =>
+  border: ${props =>
     props.isDark ? `4px solid ${props.theme.toggleIcon}` : "none"};
   background-color: ${({ theme }) =>
     theme.isDark ? theme.toggleIcon : "transparent"};
@@ -73,7 +73,7 @@ const Icon = styled.div`
             -15px -15px 0 ${toggleIcon}
           `};
   }
-`;
+`
 
 export default function ColorModeToggle({ toggle, isDark }) {
   return (
@@ -85,5 +85,5 @@ export default function ColorModeToggle({ toggle, isDark }) {
     >
       <Icon isDark={isDark} />
     </Button>
-  );
+  )
 }

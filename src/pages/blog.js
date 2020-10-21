@@ -13,7 +13,7 @@ const BlogIndex = ({ data, location }) => {
       <SEO title="All posts" />
       <Bio />
       {posts.map(({ node }) => {
-      console.log('LOG: : BlogIndex -> node', node);
+        console.log("LOG: : BlogIndex -> node", node)
         const title = node.frontmatter.title || node.fields.slug
         return (
           <article

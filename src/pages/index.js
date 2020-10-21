@@ -1,9 +1,6 @@
-import React, { useContext } from "react"
-import WhiteImage from "../../content/assets/DarkModeImage.jpg"
-import DarkImage from "../../content/assets/DarkModeImage.jpg"
+import React from "react"
 import balavishnu from "../../content/assets/balavishnu-new.png"
 import styled from "styled-components"
-import { ThemeContext } from "styled-components"
 import { rhythm } from "../utils/typography"
 import { Link } from "gatsby"
 
@@ -93,10 +90,13 @@ const Description = styled.p`
   }
   color: ${props => props.theme.textColor};
   padding: ${rhythm(1.5)} ${rhythm(1)};
+  margin: 0;
 `
 
 export const H5 = styled.h5`
   color: ${props => props.theme.primaryColor};
+  margin: 0;
+  margin-bottom: 8px;
 `
 
 const HireMeLink = styled(Link)`
@@ -116,13 +116,11 @@ const HireMeLink = styled(Link)`
 `
 
 export default function Home({ ...props }) {
-  const themeContext = useContext(ThemeContext)
   return (
     <Container>
       <ContentWrapper>
         <LeftSection>
           <Info>
-            <p>Hey, I’m</p>
             <NameText>BALAVISHNU V J </NameText>
             <H5>Frontend Developer and a dog lover</H5>
           </Info>
@@ -131,9 +129,9 @@ export default function Home({ ...props }) {
           </MobileImageWrapper>
           <StripedBackground>
             <Description>
-              I am a software engineer based in Bengaluru, IN specializing in
-              building websites, applications and loves clean, simple and unique
-              designs.
+              Balavishnu V J is a software engineer based in Bengaluru, India
+              specializing in building websites, applications and loves clean,
+              simple and unique designs.
             </Description>
           </StripedBackground>
         </LeftSection>

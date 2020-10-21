@@ -1,0 +1,112 @@
+---
+title: Effectively review pull requests
+date: "2020-10-19T11:38:10.820Z"
+description: "Hello World"
+---
+
+We all would have struggled at least once to get someone to review our Pull
+Requests(here on will refer it as PRs). When get someone to review the PR. It
+takes few decades to get it approved 😝.
+
+There are questions on why this decision was taken. Something they didn't like
+the way the code was looking. We could go on and on. Because of unknown time of
+when the review would be approved. And now everyone is frustrated about this.
+Author is not able complete the task and move on to next one, reviewers is still
+reviewing the PR, PMs haven't got the feature released yet.
+
+Let us try to improve this process. To be quick and effective.
+
+
+```jsx
+ <div>hi guys!</div>
+```
+
+## 1. Prepare
+
+Let's try not to surprise the reviewer.Discuss the approach before jumping to
+write. This would help in getting the implementation and overall understanding
+of the feature. Also get this should documented in any form your team is
+comfortable with. It could be any form of taking documents, but it should be
+traceable later.
+
+Documents could be like Technical Design Documents(TDDs), Technical Review
+Documents(TRDs), Product Requirement Documents(PRDs), UI/UX design or just a
+doc. You don't need everything, but as much info you can provide. Better it
+would be for you and the peers to review. And even better when you want to track
+later.
+
+Once you have a mental model of how you would solve your problem(I plan the file
+structure, function names, sometimes even variable names.). You can start
+writing your code.
+
+This step is very important after this step everyone should be on the same page.
+There would be small changes later, but that would be minimal and over time
+these changes would reduce.
+
+Try to split the PR into logically smaller pieces such that the entire PR makes
+sense at the same time it is not too big. Try to avoid huge PRs.
+
+## 2. Code
+
+While writing code, make sure you add enough comments and tests.
+
+### 3. Review
+
+I generally categorize any review comment into three categories viz. Cosmetics,
+Opinions, Critical, and Appreciations.
+
+We should avoid reviewing the PR along with the author. Also if
+possible/required we should checkout the branch and look at the application
+running.
+
+#### Cosmetics
+
+These are changes like use tabs and spaces, single quotes and double-quotes.
+Anything that doesn't affect the quality of the code, but mostly for
+consistency.
+
+We would want to avoid such comments in the PR. Ideally, we should have some
+formatter and linter which would catch such issues. So that there is no human
+intervention required.
+
+If you are not able to write these style guidelines for these conventions you
+follow, at least document it somewhere. And the whole team can just follow the
+guidelines. I would prefer to avoid such things. It would look something like
+Airbnb's JS guideline).
+
+#### Opinions
+
+We would want to reduce these too. These are generally such comments where there
+are x,y and z ways to solve the same problem. Our preparation step would help us
+a lot in reducing such opinions during the review.
+
+things like different abstractions, or handling "future" cases, etc. We would
+want to avoid such comments at this stage as much as possible.
+
+We could also suggest better variable names etc.
+
+#### Critical
+
+This is the real deal. You might want to comment out the typos, possible bugs,
+pitfalls, etc. If you are not able to understand why something is done in a
+certain way, feel free to ask for documentation to avoid offline communication
+here(like the author explaining to you on call why that change was done). You
+would want those missing in understanding to be documented.
+
+#### Appreciations
+
+Something we might miss during these reviews is appreciating the author if you
+find something cool. Or some smart way to solve a problem. Or even junior’s PR,
+where they have done a good job. These appreciations are really important too.
+Even celebrate when a major task is done, like an upgrade. Or long overdue
+migration.
+
+This can be anywhere, in the PR comments or offline(calls, messages or telling
+them directly). But make sure you do 😀.
+
+## TL;DR;
+
+- Discuss the approach before starting to code, document the same.
+- Have machines to format and lint code, avoid those in PR.
+- Comment important things, ask for an explanation, add comments.
+- Appreciate the author

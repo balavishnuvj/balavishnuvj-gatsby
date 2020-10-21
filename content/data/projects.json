@@ -1,0 +1,74 @@
+[
+  {
+    "title": "RTL Simple Queries",
+    "description": "RTL Simple Queries is a companion library for React Testing Library that provides an alternative query API.",
+    "link": "https://github.com/balavishnuvj/rtl-simple-queries",
+    "tags": ["react", "testing"],
+    "subHeading": "",
+    "kind": "open",
+    "kindText": ""
+  },
+  {
+    "title": "HealthifyMe",
+    "subHeading": "Products",
+    "description": "HealthifyMe is an Indian digital health and wellness platform that provides services such as calorie tracking, one-on-one nutrition and fitness coaching, and diet and workout plans.",
+    "link": "https://www.healthifyme.com/",
+    "tags": ["react"],
+    "kindText": ""
+  },
+  {
+    "title": "React Hooks Form Validator",
+    "description": "Simple, extensible and config based form validation.",
+    "subHeading": "",
+
+    "link": "https://github.com/balavishnuvj/react-hooks-form-validator",
+    "tags": ["react"],
+    "kind": "open",
+    "kindText": ""
+  },
+  {
+    "title": "Sri Kanya Steels",
+    "description": "Online Shopping site in India for high quality steel and cement",
+    "subHeading": "",
+    "link": "https://www.srikanyasteels.com/",
+    "tags": ["react", "node", "react native", "graphql"],
+    "kind": "freelance",
+    "kindText": "Freelancing"
+  },
+  {
+    "title": "FE Credit Shield",
+    "subHeading": "Health Insurance App",
+    "description": "Completely automated application for a bancassurance product of FE Credit.",
+    "link": "https://github.com/balavishnuvj/rtl-simple-queries",
+    "tags": ["react", "react native", "redux"],
+    "kind": "service",
+    "kindText": "via Kuliza Technologies"
+  },
+  {
+    "title": "$nap",
+    "subHeading": "Lending App & Internal Web Dashboard (Service)",
+    "description": "Vietnam’s first completely automated loan and credit card, origination and management system",
+    "link": "https://github.com/balavishnuvj/react-hooks-form-validator",
+    "tags": ["react", "react native", "redux"],
+    "kind": "service",
+    "kindText": "via Kuliza Technologies"
+  },
+  {
+    "title": "JS Console Logger",
+    "subHeading": "",
+    "description": "A configurable, lightweight, opinionated JavaScript logger.",
+    "link": "https://github.com/balavishnuvj/js-console-logger",
+    "tags": ["javascript"],
+    "kind": "open",
+    "kindText": "via Kuliza Technologies"
+  },
+  {
+    "title": "Acko",
+    "subHeading": "General Insurance Web App",
+    "description": "Online general insurance policy provider by Coverfox",
+    "link": "https://www.acko.com/",
+    "tags": ["react", "redux"],
+    "kind": "service",
+    "kindText": "via Kuliza Technologies"
+  }
+]

@@ -3,7 +3,6 @@ import { Link } from "gatsby"
 import styled from "styled-components"
 import ColorModeToggle from "./ColorModeToggle"
 import { rhythm } from "../utils/typography"
-import Menu from "../../content/assets/svg/menu.svg"
 
 const BaseLink = styled(Link)`
   text-decoration: none;
@@ -28,14 +27,6 @@ const MobilePageLink = styled(BaseLink)`
   padding: ${rhythm(1)} 0;
   border-bottom: 1px solid white;
   width: 100%;
-`
-
-const HireMeLink = styled(BaseLink)`
-  padding: 8px 36px;
-  border-radius: 4px;
-  background-color: ${props => props.theme.primaryColor};
-  color: ${props => props.theme.ctaText};
-  margin-left: ${rhythm(1)};
 `
 
 const LeftSection = styled.section``
@@ -147,7 +138,7 @@ export default function Navigation({ toggleTheme }) {
         <RightSection>
           <PageLink to="/hire">Hire</PageLink>
           <PageLink to="/about">About</PageLink>
-          <PageLink to="/works">Works</PageLink>
+          <PageLink to="/projects">Projects</PageLink>
           <PageLink to="/blog">Blogs</PageLink>
           <ColorModeToggle toggle={toggleTheme} />
         </RightSection>
@@ -166,7 +157,7 @@ export default function Navigation({ toggleTheme }) {
         <MobileMenu>
           <MobilePageLink to="/">Home</MobilePageLink>
           <MobilePageLink to="/about">About</MobilePageLink>
-          <MobilePageLink to="/works">Works</MobilePageLink>
+          <MobilePageLink to="/projects">Projects</MobilePageLink>
           <MobilePageLink to="/blog">Blog</MobilePageLink>
           <MobilePageLink to="/hire">Hire</MobilePageLink>
         </MobileMenu>
