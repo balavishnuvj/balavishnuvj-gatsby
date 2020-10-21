@@ -3,6 +3,7 @@ import styled from "styled-components"
 import { rhythm } from "../utils/typography"
 import { graphql, useStaticQuery } from "gatsby"
 import PageInfo from "../components/PageInfo"
+import SEO from "../components/seo"
 
 const Container = styled.section`
   padding: 0 ${rhythm(1)};
@@ -122,6 +123,7 @@ export default function Projects({ ...props }) {
   const { projects } = data.site.siteMetadata
   return (
     <Container>
+      <SEO title="posts" />
       <PageInfo
         title="Projects"
         description="Here are a few projects Balavishnu V J has worked on"

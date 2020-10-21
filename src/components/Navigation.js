@@ -27,6 +27,9 @@ const MobilePageLink = styled(BaseLink)`
   padding: ${rhythm(1)} 0;
   border-bottom: 1px solid white;
   width: 100%;
+  &:hover {
+    color: ${props => props.theme.quoteColor};
+  }
 `
 
 const LeftSection = styled.section``
@@ -41,7 +44,7 @@ const WebNav = styled.nav`
     display: none;
   }
   display: flex;
-  padding: 28px 16px;
+  padding: 42px 16px;
   justify-content: space-between;
   align-items: center;
 `
@@ -117,7 +120,7 @@ export const MobileMenu = styled.div`
   width: 100vw;
   height: 100vh;
   z-index: 1;
-  background-color: ${props => props.theme.primaryColor};
+  background-color: ${props => props.theme.mobileMenuBackground};
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -129,6 +132,10 @@ export const MobileMenu = styled.div`
 export default function Navigation({ toggleTheme }) {
   const [isToggledOn, setToggle] = useState(false)
   const toggle = () => setToggle(!isToggledOn)
+
+  function handleClose() {
+    setToggle(false)
+  }
   return (
     <header>
       <WebNav>
@@ -136,10 +143,10 @@ export default function Navigation({ toggleTheme }) {
           <LogoLink to="/">{"<balavishnu>"}</LogoLink>
         </LeftSection>
         <RightSection>
-          <PageLink to="/hire">Hire</PageLink>
+          {/* <PageLink to="/hire">Hire</PageLink> */}
           <PageLink to="/about">About</PageLink>
           <PageLink to="/projects">Projects</PageLink>
-          <PageLink to="/blog">Blogs</PageLink>
+          {/* <PageLink to="/blog">Blogs</PageLink> */}
           <ColorModeToggle toggle={toggleTheme} />
         </RightSection>
       </WebNav>
@@ -155,11 +162,21 @@ export default function Navigation({ toggleTheme }) {
       </MobileNav>
       {isToggledOn && (
         <MobileMenu>
-          <MobilePageLink to="/">Home</MobilePageLink>
-          <MobilePageLink to="/about">About</MobilePageLink>
-          <MobilePageLink to="/projects">Projects</MobilePageLink>
-          <MobilePageLink to="/blog">Blog</MobilePageLink>
-          <MobilePageLink to="/hire">Hire</MobilePageLink>
+          <MobilePageLink onClick={handleClose} to="/">
+            Home
+          </MobilePageLink>
+          <MobilePageLink onClick={handleClose} to="/about">
+            About
+          </MobilePageLink>
+          <MobilePageLink onClick={handleClose} to="/projects">
+            Projects
+          </MobilePageLink>
+          {/* <MobilePageLink onClick={handleClose} to="/blog">
+            Blog
+          </MobilePageLink> */}
+          {/* <MobilePageLink onClick={handleClose} to="/hire">
+            Hire
+          </MobilePageLink> */}
         </MobileMenu>
       )}
     </header>

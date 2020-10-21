@@ -14,7 +14,7 @@ export default function PageInfo({ title, description }) {
   return (
     <div>
       <Title>{title}</Title>
-      <Description>{description}</Description>
+      {description && <Description>{description}</Description>}
     </div>
   )
 }

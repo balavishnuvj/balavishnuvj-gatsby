@@ -10,6 +10,7 @@ export const LIGHT_THEME = {
   quoteColor: "#6c6c6c",
   cardBackground: "#ffffff",
   shadowColor: "#dbd9e3",
+  mobileMenuBackground: '#443868',
   isDark: false,
 }
 
@@ -24,5 +25,6 @@ export const DARK_THEME = {
   quoteColor: "#c1c1c1",
   cardBackground: "#2a2a2a",
   shadowColor: "#181818",
+  mobileMenuBackground: '#1f1f1f',
   isDark: true,
 }

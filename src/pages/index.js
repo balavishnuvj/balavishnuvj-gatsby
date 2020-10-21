@@ -8,6 +8,7 @@ const Container = styled.section`
   display: flex;
   align-items: center;
   height: 100%;
+  flex: 1;
   @media (max-width: 699px) {
     flex-direction: column;
   }
@@ -34,6 +35,7 @@ const Image = styled.img`
   width: ${rhythm(10)};
   min-width: 10px;
   margin-bottom: -1px;
+  height: 450px;
 `
 
 const MobileImageWrapper = styled.div`
@@ -96,7 +98,7 @@ const Description = styled.p`
 export const H5 = styled.h5`
   color: ${props => props.theme.primaryColor};
   margin: 0;
-  margin-bottom: 8px;
+  margin-bottom: 28px;
 `
 
 const HireMeLink = styled(Link)`
@@ -137,7 +139,7 @@ export default function Home({ ...props }) {
         </LeftSection>
         <Image src={balavishnu} alt="Balavishnu V J" />
       </ContentWrapper>
-      <HireMeLink to="hire">Hire Me</HireMeLink>
+      {/* <HireMeLink to="hire">Hire Me</HireMeLink> */}
     </Container>
   )
 }

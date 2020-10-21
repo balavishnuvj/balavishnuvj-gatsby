@@ -10,7 +10,7 @@ import { rhythm } from "../utils/typography"
 const Container = styled.footer`
   display: flex;
   justify-content: space-between;
-  padding: 16px;
+  padding: 28px 16px;
   align-items: flex-end;
 `
 
