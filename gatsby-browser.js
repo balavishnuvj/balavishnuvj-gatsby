@@ -1,5 +1,3 @@
-// custom typefaces
-import "prismjs/themes/prism.css"
 import React from "react"
 import Layout from "./src/components/BaseLayout"
 

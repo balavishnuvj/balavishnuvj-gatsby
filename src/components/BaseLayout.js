@@ -18,9 +18,10 @@ import { THEMES, THEME_STORAGE_KEY } from "../constants/app"
  */
 export const useTheme = () => {
   const storedTheme = () =>
-    typeof window !== "undefined" &&
-    window.localStorage.getItem(THEME_STORAGE_KEY)
-  const [theme, setTheme] = useState(storedTheme || THEMES.LIGHT)
+    (typeof window !== "undefined" &&
+      window.localStorage.getItem(THEME_STORAGE_KEY)) ||
+    THEMES.LIGHT
+  const [theme, setTheme] = useState(storedTheme)
   const toggleTheme = () =>
     setTheme(prevTheme => {
       return prevTheme === THEMES.LIGHT ? THEMES.DARK : THEMES.LIGHT
@@ -71,7 +72,6 @@ const Layout = ({ location, title, children, path }) => {
   }, [])
   const [theme, toggleTheme] = useTheme()
   const isDarkTheme = theme === THEMES.DARK
-  console.log("LOG: : Layout -> theme", theme)
   const themeObj = isDarkTheme ? DARK_THEME : LIGHT_THEME
 
   return (
