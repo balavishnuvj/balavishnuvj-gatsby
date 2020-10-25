@@ -25,7 +25,7 @@ const ContentWrapper = styled.article`
 const LeftSection = styled.section``
 
 const Info = styled.section`
-  padding: 0;
+  padding: 0 ${rhythm(1)};
 `
 
 const Image = styled.img`
@@ -92,7 +92,7 @@ const Description = styled.p`
     color: ${props => props.theme.ctaText};
   }
   color: ${props => props.theme.textColor};
-  padding: ${rhythm(1.5)} 0;
+  padding: ${rhythm(1.5)} ${rhythm(1)};
   margin: 0;
 `
 

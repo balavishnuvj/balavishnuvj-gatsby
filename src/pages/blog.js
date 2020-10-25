@@ -21,6 +21,9 @@ const BlogGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   margin-bottom: 24px;
+  @media (max-width: 699px) {
+    grid-template-columns: 1fr;
+  }
 `
 
 const BlogTitle = styled.h4`
@@ -60,10 +63,14 @@ const BlogTime = styled.p`
   margin: 0;
 `
 
+const BlogWrapper = styled.section`
+  padding: 0 ${rhythm(1)};
+`
+
 const BlogIndex = ({ data, location }) => {
   const posts = data.allMdx.edges
   return (
-    <React.Fragment>
+    <BlogWrapper>
       <SEO title="Blogs" />
       <PageInfo
         title="Blogs"
@@ -115,7 +122,7 @@ const BlogIndex = ({ data, location }) => {
         }}
       />
       <Bio />
-    </React.Fragment>
+    </BlogWrapper>
   )
 }
 

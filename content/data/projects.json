@@ -39,7 +39,7 @@
     "title": "FE Credit Shield",
     "subHeading": "Health Insurance App",
     "description": "Completely automated application for a bancassurance product of FE Credit.",
-    "link": "https://github.com/balavishnuvj/rtl-simple-queries",
+    "link": "",
     "tags": ["react", "react native", "redux"],
     "kind": "service",
     "kindText": "via Kuliza Technologies"
@@ -48,7 +48,7 @@
     "title": "$nap",
     "subHeading": "Lending App & Internal Web Dashboard (Service)",
     "description": "Vietnam’s first completely automated loan and credit card, origination and management system",
-    "link": "https://github.com/balavishnuvj/react-hooks-form-validator",
+    "link": "",
     "tags": ["react", "react native", "redux"],
     "kind": "service",
     "kindText": "via Kuliza Technologies"

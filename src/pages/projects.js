@@ -143,7 +143,7 @@ export default function Projects({ ...props }) {
                     <ProjectSubHeading>{project.subHeading}</ProjectSubHeading>
                   )}
                 </ProjectInfo>
-                <ViewLink href={project.link}>View</ViewLink>
+                {project.link && <ViewLink href={project.link}>View</ViewLink>}
               </ProjectLeft>
               <ProjectLeft>
                 <ProjectDesc>{project.description}</ProjectDesc>
