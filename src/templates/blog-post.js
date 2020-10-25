@@ -5,11 +5,58 @@ import Bio from "../components/bio"
 import SEO from "../components/seo"
 import { rhythm, scale } from "../utils/typography"
 import styled from "styled-components"
+import Clock from "../../content/assets/svg/clock.svg"
 
 export const BlogSection = styled.section`
   > blockquote {
     color: ${props => props.theme.quoteColor};
   }
+  h1 .anchor svg,
+  h2 .anchor svg,
+  h3 .anchor svg,
+  h4 .anchor svg,
+  h5 .anchor svg,
+  h6 .anchor svg {
+    position: absolute;
+    left: -24px;
+    height: 100%; /* vertically center */
+    width: 20px;
+    transition: all 0.2s;
+    opacity: 0;
+  }
+  h1:hover .anchor svg,
+  h2:hover .anchor svg,
+  h3:hover .anchor svg,
+  h4:hover .anchor svg,
+  h5:hover .anchor svg,
+  h6:hover .anchor svg {
+    opacity: 1;
+  }
+`
+
+const ClockIcon = styled(Clock)`
+  .fill {
+    path {
+      fill: ${props => props.theme.socialIcons};
+    }
+  }
+  margin-right: 4px;
+`
+
+const BlogFoot = styled.section`
+  display: flex;
+  width: 100%;
+  align-items: center;
+  color: ${props => props.theme.quoteColor};
+  font-size: 12px;
+  margin: 16px 0;
+`
+
+const BlogTime = styled.p`
+  display: flex;
+  align-items: center;
+  margin: 0;
+  margin-right: 4px;
 `
 
 const BlogPostTemplate = ({ data, pageContext, location }) => {
@@ -38,15 +85,13 @@ const BlogPostTemplate = ({ data, pageContext, location }) => {
           >
             {post.frontmatter.title}
           </h1>
-          <p
-            style={{
-              ...scale(-1 / 5),
-              display: `block`,
-              marginBottom: rhythm(1),
-            }}
-          >
-            {post.frontmatter.date}
-          </p>
+          <BlogFoot>
+            <BlogTime>
+              <ClockIcon />
+              {post.timeToRead} mins |{" "}
+            </BlogTime>
+            <span>{post.frontmatter.date}</span>
+          </BlogFoot>
         </header>
         <BlogSection>
           <MDXRenderer>{post.body}</MDXRenderer>
@@ -104,6 +149,7 @@ export const pageQuery = graphql`
       id
       excerpt(pruneLength: 160)
       body
+      timeToRead
       frontmatter {
         title
         date(formatString: "MMMM DD, YYYY")

@@ -2,7 +2,8 @@ import React from "react"
 import balavishnu from "../../content/assets/balavishnu-new.png"
 import styled from "styled-components"
 import { rhythm } from "../utils/typography"
-import { Link } from "gatsby"
+import { graphql, Link, useStaticQuery } from "gatsby"
+import SEO from "../components/seo"
 
 const Container = styled.section`
   display: flex;
@@ -24,7 +25,7 @@ const ContentWrapper = styled.article`
 const LeftSection = styled.section``
 
 const Info = styled.section`
-  padding: 0 ${rhythm(1)};
+  padding: 0;
 `
 
 const Image = styled.img`
@@ -91,7 +92,7 @@ const Description = styled.p`
     color: ${props => props.theme.ctaText};
   }
   color: ${props => props.theme.textColor};
-  padding: ${rhythm(1.5)} ${rhythm(1)};
+  padding: ${rhythm(1.5)} 0;
   margin: 0;
 `
 
@@ -118,8 +119,29 @@ const HireMeLink = styled(Link)`
 `
 
 export default function Home({ ...props }) {
+  const data = useStaticQuery(
+    graphql`
+      query {
+        site {
+          siteMetadata {
+            social {
+              twitter
+            }
+          }
+        }
+      }
+    `
+  )
+  const {
+    site: {
+      siteMetadata: {
+        social: { twitter },
+      },
+    },
+  } = data
   return (
     <Container>
+      <SEO title="Home" />
       <ContentWrapper>
         <LeftSection>
           <Info>
@@ -132,8 +154,10 @@ export default function Home({ ...props }) {
           <StripedBackground>
             <Description>
               Balavishnu V J is a software engineer based in Bengaluru, India
-              specializing in building websites, applications and loves clean,
-              simple and unique designs.
+              specializing in building websites and applications. Passionate
+              about making the world a better place by solving problems using
+              technology. If you would like to get in touch or just want to have
+              a chat, shoot me a <a href={twitter}>message</a>.
             </Description>
           </StripedBackground>
         </LeftSection>

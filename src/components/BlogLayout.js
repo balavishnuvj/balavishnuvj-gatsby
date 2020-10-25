@@ -2,6 +2,7 @@ import React from "react"
 import styled from "styled-components"
 import Navigation from "./Navigation"
 import Footer from "./Footer"
+import { rhythm } from "../utils/typography"
 
 const Container = styled.div`
   display: flex;
@@ -15,6 +16,7 @@ const BlogContainer = styled.div`
   max-width: 42rem;
   margin: 0 auto;
   flex: 1;
+  padding: 0 ${rhythm(1)};
 `
 
 const Main = styled.main``

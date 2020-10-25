@@ -1,10 +1,11 @@
 import React, { useState } from "react"
-import { Link } from "gatsby"
+import { Link as GatsbyLink } from "gatsby"
 import styled from "styled-components"
 import ColorModeToggle from "./ColorModeToggle"
 import { rhythm } from "../utils/typography"
+import Logo from "../../content/assets/svg/logo.svg"
 
-const BaseLink = styled(Link)`
+const Link = styled(GatsbyLink)`
   text-decoration: none;
   box-shadow: none;
   color: ${props => props.theme.textColor};
@@ -14,12 +15,20 @@ const BaseLink = styled(Link)`
   }
 `
 
+function BaseLink({ ...props }) {
+  return <Link activeClassName="active" {...props} />
+}
+
 const LogoLink = styled(BaseLink)`
   margin-right: 64px;
 `
 
 const PageLink = styled(BaseLink)`
   margin-right: 40px;
+  &.active {
+    font-weight: bold;
+    color: ${props => props.theme.primaryColor};
+  }
 `
 
 const MobilePageLink = styled(BaseLink)`
@@ -129,6 +138,18 @@ export const MobileMenu = styled.div`
   padding: 0 32px;
 `
 
+export const LogoIcon = styled(Logo)`
+  g {
+    path {
+      fill: ${props => props.theme.primaryColor};
+    }
+  }
+  &&& {
+    width: 72px;
+    height: 42px;
+  }
+`
+
 export default function Navigation({ toggleTheme }) {
   const [isToggledOn, setToggle] = useState(false)
   const toggle = () => setToggle(!isToggledOn)
@@ -140,13 +161,17 @@ export default function Navigation({ toggleTheme }) {
     <header>
       <WebNav>
         <LeftSection>
-          <LogoLink to="/">{"<balavishnu>"}</LogoLink>
+          <LogoLink to="/">
+            <LogoIcon />
+          </LogoLink>
         </LeftSection>
         <RightSection>
           {/* <PageLink to="/hire">Hire</PageLink> */}
-          <PageLink to="/about">About</PageLink>
+          <PageLink to="/about" activeClassName="active">
+            About
+          </PageLink>
           <PageLink to="/projects">Projects</PageLink>
-          {/* <PageLink to="/blog">Blogs</PageLink> */}
+          <PageLink to="/blog">Blogs</PageLink>
           <ColorModeToggle toggle={toggleTheme} />
         </RightSection>
       </WebNav>
@@ -171,9 +196,9 @@ export default function Navigation({ toggleTheme }) {
           <MobilePageLink onClick={handleClose} to="/projects">
             Projects
           </MobilePageLink>
-          {/* <MobilePageLink onClick={handleClose} to="/blog">
+          <MobilePageLink onClick={handleClose} to="/blog">
             Blog
-          </MobilePageLink> */}
+          </MobilePageLink>
           {/* <MobilePageLink onClick={handleClose} to="/hire">
             Hire
           </MobilePageLink> */}

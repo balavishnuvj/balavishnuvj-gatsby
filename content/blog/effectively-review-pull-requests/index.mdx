@@ -1,107 +1,113 @@
 ---
 title: Effectively review pull requests
 date: "2020-10-19T11:38:10.820Z"
-description: "Hello World"
+description:
+  "We all would have struggled at least once to get someone to review our Pull
+  Requests (here on let's call it PRs). When you request someone to review the
+  your PR. It takes few decades to get it approved."
 ---
 
 We all would have struggled at least once to get someone to review our Pull
-Requests(here on will refer it as PRs). When get someone to review the PR. It
-takes few decades to get it approved 😝.
+Requests (here on let's call it PRs). When you request someone to review your
+PR, they take a few decades to approve 😝.
 
-There are questions on why this decision was taken. Something they didn't like
-the way the code was looking. We could go on and on. Because of unknown time of
-when the review would be approved. And now everyone is frustrated about this.
-Author is not able complete the task and move on to next one, reviewers is still
-reviewing the PR, PMs haven't got the feature released yet.
+The cause for the delay is often because the reviewer is discovering the choices
+you took to solve the problem for the first time. There are debates about why a
+particular decision was taken. Sometime they might not like the way the code
+"looks". We could go on and on.
 
-Let us try to improve this process. To be quick and effective.
+Because of this, there is a lot of uncertainty on when the PR would be approved.
+Thus, it delays when your users would be able to use the awesome feature you
+have built. And now everyone is sad ☹️.
 
-## 1. Prepare
+Let us try to improve this process, be quick and more effective.
 
-Let's try not to surprise the reviewer.Discuss the approach before jumping to
-write. This would help in getting the implementation and overall understanding
-of the feature. Also get this should documented in any form your team is
-comfortable with. It could be any form of taking documents, but it should be
-traceable later.
+### 1. Prepare
+
+Let's try not to surprise the reviewer. Discuss the approach before we jump to
+code. This would help in understanding the architecture and design required to
+implement the feature. The outcome of the discussion has to be documented in any
+form your team is comfortable with. It could be any form of taking documents,
+but it has to be traceable with PR.
 
 Documents could be like Technical Design Documents(TDDs), Technical Review
 Documents(TRDs), Product Requirement Documents(PRDs), UI/UX design or just a
-doc. You don't need everything, but as much info you can provide. Better it
-would be for you and the peers to review. And even better when you want to track
-later.
+doc. You don't need everything, but more the merrier.
 
-Once you have a mental model of how you would solve your problem(I plan the file
-structure, function names, sometimes even variable names.). You can start
+This step is very important after this everyone should be on the same page.
+There could be small changes later, but that should be minimal. Over time number
+of such changes should reduce as we are able to it plan better.
+
+Try to split the PR into logically smaller pieces such that the entire PR still
+makes sense at the same time it is not too big. We need find to balance between
+small and complete PRs. Try to avoid huge PRs.
+
+### 2. Code
+
+Once you have a mental model of how you would solve your problem. You can start
 writing your code.
-
-This step is very important after this step everyone should be on the same page.
-There would be small changes later, but that would be minimal and over time
-these changes would reduce.
-
-Try to split the PR into logically smaller pieces such that the entire PR makes
-sense at the same time it is not too big. Try to avoid huge PRs.
-
-## 2. Code
 
 While writing code, make sure you add enough comments and tests.
 
 ### 3. Review
 
-I generally categorize any review comment into three categories viz. Cosmetics,
-Opinions, Critical, and Appreciations.
+I generally categorize any review comment into these four categories viz.
+[Cosmetics](#cosmetics), [Opinions](#opinions), [Critical](#critical), and
+[Appreciations](#appreciations).
 
-We should avoid reviewing the PR along with the author. Also if
-possible/required we should checkout the branch and look at the application
-running.
+Avoid reviewing the PR along with the author. Also if possible we should
+checkout the branch in local and run the feature. This will give you clear idea
+about the feature
 
 #### Cosmetics
 
-These are changes like use tabs and spaces, single quotes and double-quotes.
-Anything that doesn't affect the quality of the code, but mostly for
-consistency.
+These are changes like tabs vs spaces, single quotes vs double-quotes. Anything
+that doesn't affect the quality of the code, but mostly for "consistency".
 
 We would want to avoid such comments in the PR. Ideally, we should have some
-formatter and linter which would catch such issues. So that there is no human
-intervention required.
+tools like formatter(eg. [prettier](https://prettier.io/) for Javascript) and
+linter(eg. [eslint](https://eslint.org/)). So that there is no human
+intervention required. We would have to agree on these rules, once we do that
+there shouldn't be any arguments.
 
-If you are not able to write these style guidelines for these conventions you
-follow, at least document it somewhere. And the whole team can just follow the
+If you are not able to find automated tools for the guidelines you wish to
+follow, at least document the guidelines. And the team can just follow the
 guidelines. I would prefer to avoid such things. It would look something like
-Airbnb's JS guideline).
+[Airbnb's JS guideline](https://github.com/airbnb/javascript), this guideline
+could be dogmatic. Make sure to update or remove a guideline if it is not
+helping your team.
 
 #### Opinions
 
 We would want to reduce these too. These are generally such comments where there
 are x,y and z ways to solve the same problem. Our preparation step would help us
-a lot in reducing such opinions during the review.
-
-things like different abstractions, or handling "future" cases, etc. We would
-want to avoid such comments at this stage as much as possible.
-
-We could also suggest better variable names etc.
+a lot in reducing such opinions during the review like different abstractions or
+handling "future" cases, etc. We would want to avoid such comments at this stage
+as much as possible.
 
 #### Critical
 
 This is the real deal. You might want to comment out the typos, possible bugs,
 pitfalls, etc. If you are not able to understand why something is done in a
-certain way, feel free to ask for documentation to avoid offline communication
-here(like the author explaining to you on call why that change was done). You
-would want those missing in understanding to be documented.
+certain way, feel free to ask the author to document their reasoning. Try to
+avoid offline communication here (like the author explaining to you on call why
+that change was done). You would want those gaps in understanding to be
+documented.
 
 #### Appreciations
 
-Something we might miss during these reviews is appreciating the author if you
-find something cool. Or some smart way to solve a problem. Or even junior’s PR,
-where they have done a good job. These appreciations are really important too.
-Even celebrate when a major task is done, like an upgrade. Or long overdue
-migration.
+Something we might miss during these reviews is appreciating the author. If you
+find something cool, or some smart way to solve a problem, long overdue
+refactoring, or even first PR of a new member in your team🥳. These appreciations
+are really important.
 
-This can be anywhere, in the PR comments or offline(calls, messages or telling
-them directly). But make sure you do 😀.
+ Make sure you do appreciate 😀.
 
-## TL;DR;
+## TL;DR
 
-- Discuss the approach before starting to code, document the same.
-- Have machines to format and lint code, avoid those in PR.
-- Comment important things, ask for an explanation, add comments.
+- Discuss the approach before starting to code, document it.
+- Have tools to format and lint code, avoid those comments in PR.
+- Comment important things, ask for documentation for gaps.
 - Appreciate the author
+
+Be kind.

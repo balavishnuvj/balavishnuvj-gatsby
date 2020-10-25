@@ -16,7 +16,11 @@ const Container = styled.footer`
 
 const LeftSection = styled.section``
 
-const RightSection = styled.section``
+const RightSection = styled.section`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-column-gap: 16px;
+`
 
 // const iconStyles = css`
 //   circle {
@@ -36,7 +40,6 @@ const iconStyles = css`
   rect {
     stroke: ${props => props.theme.iconColor};
   }
-  margin-right: 16px;
 `
 
 const LinkedInIcon = styled(LinkedIn)`

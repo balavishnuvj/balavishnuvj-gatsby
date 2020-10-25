@@ -61,6 +61,8 @@ const GlobalStyle = createGlobalStyle`
   }
 `
 
+const blogPathRegex = /^\/blog\/[\w-]+/
+
 const Wrapper = styled.div``
 
 const Layout = ({ location, title, children, path }) => {
@@ -78,7 +80,7 @@ const Layout = ({ location, title, children, path }) => {
     <ThemeProvider theme={themeObj}>
       <GlobalStyle theme={themeObj} themeName={theme} count={key} />
       <Wrapper key={`${key}_${path}`}>
-        {path.startsWith("/blog") ? (
+        {blogPathRegex.test(path) ? (
           <BlogLayout toggleTheme={toggleTheme}>{children}</BlogLayout>
         ) : (
           <SinglePageLayout toggleTheme={toggleTheme}>

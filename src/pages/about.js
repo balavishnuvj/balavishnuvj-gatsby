@@ -59,7 +59,7 @@ export default function Projects({ ...props }) {
   } = data
   return (
     <Container>
-      <SEO title="posts" />
+      <SEO title="About Me" />
       <PageInfo title="About Me" />
       <ProjectsGrid>
         <div>

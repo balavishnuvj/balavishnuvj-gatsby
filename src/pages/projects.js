@@ -123,7 +123,10 @@ export default function Projects({ ...props }) {
   const { projects } = data.site.siteMetadata
   return (
     <Container>
-      <SEO title="posts" />
+      <SEO
+        title="Projects"
+        description="Check out Balavishnu's work across various industries"
+      />
       <PageInfo
         title="Projects"
         description="Here are a few projects Balavishnu V J has worked on"
