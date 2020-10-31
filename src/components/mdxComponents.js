@@ -4,12 +4,16 @@ import styled, { css } from "styled-components"
 import theme from "prism-react-renderer/themes/nightOwl"
 import { bpDesktopOnly } from "../utils/breakpoints"
 
+// import { LiveProvider, LiveEditor, LiveError, LivePreview } from "react-live"
+import { rhythm } from "../utils/typography"
+
 const RE = /{([\d,-]+)}/
 
 const wrapperStyles = css`
   overflow: auto;
-  margin-left: -20px;
-  margin-right: -20px;
+  margin-left: -${rhythm(1)};
+  margin-right: -${rhythm(1)};
+  max-width: 100vw;
   ${bpDesktopOnly} {
     margin-left: -80px;
     margin-right: -80px;
@@ -75,6 +79,17 @@ function calculateLinesToHighlight(meta) {
   }
 }
 
+// function LiveDemoEditor({codeString, children}) {
+//   console.log('LOG: : LiveDemoEditor -> children', children);
+//   return (
+//     <LiveProvider code={codeString} theme={theme}>
+//       <LiveEditor />
+//       <LiveError />
+//       <LivePreview />
+//     </LiveProvider>
+//   )
+// }
+
 function Code({ codeString, language, metastring }) {
   const shouldHighlightLine = calculateLinesToHighlight(metastring)
   return (
@@ -123,6 +138,9 @@ export default {
   pre: preProps => {
     const props = preToCodeBlock(preProps)
     // if there's a codeString and some props, we passed the test
+    // if (props.live === 'true') {
+    //   return <LiveDemoEditor {...props} />
+    // }
     if (props) {
       return <Code {...props} />
     } else {

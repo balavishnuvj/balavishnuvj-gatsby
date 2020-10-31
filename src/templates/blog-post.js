@@ -82,35 +82,37 @@ const BlogPostTemplate = ({ data, pageContext, location }) => {
       />
       <MDXProvider components={mdxComponents}>
         <article itemScope itemType="http://schema.org/Article">
-          <header>
-            <h1
-              itemProp="headline"
+          <div>
+            <header>
+              <h1
+                itemProp="headline"
+                style={{
+                  marginTop: rhythm(1),
+                  marginBottom: 0,
+                }}
+              >
+                {post.frontmatter.title}
+              </h1>
+              <BlogFoot>
+                <BlogTime>
+                  <ClockIcon />
+                  {post.timeToRead} mins |{" "}
+                </BlogTime>
+                <span>{post.frontmatter.date}</span>
+              </BlogFoot>
+            </header>
+            <BlogSection>
+              <MDXRenderer>{post.body}</MDXRenderer>
+            </BlogSection>
+            <hr
               style={{
-                marginTop: rhythm(1),
-                marginBottom: 0,
+                marginBottom: rhythm(1),
               }}
-            >
-              {post.frontmatter.title}
-            </h1>
-            <BlogFoot>
-              <BlogTime>
-                <ClockIcon />
-                {post.timeToRead} mins |{" "}
-              </BlogTime>
-              <span>{post.frontmatter.date}</span>
-            </BlogFoot>
-          </header>
-          <BlogSection>
-            <MDXRenderer>{post.body}</MDXRenderer>
-          </BlogSection>
-          <hr
-            style={{
-              marginBottom: rhythm(1),
-            }}
-          />
-          <footer>
-            <Bio />
-          </footer>
+            />
+            <footer>
+              <Bio />
+            </footer>
+          </div>
         </article>
       </MDXProvider>
 
