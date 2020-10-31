@@ -35,6 +35,10 @@ const BlogTitle = styled.h4`
 const BlogLink = styled(Link)`
   color: ${props => props.theme.textColor};
   box-shadow: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
 `
 
 const BlogArticle = styled.article`
@@ -76,20 +80,21 @@ const BlogIndex = ({ data, location }) => {
         title="Blogs"
         description="Thoughts and opinions about programming, React, JavaScript and other interesting things."
       />
-        <BlogGrid>
-          {posts.map(({ node }) => {
-            const title = node.frontmatter.title || node.fields.slug
-            return (
-              <BlogArticle
-                key={node.fields.slug}
-                itemScope
-                itemType="http://schema.org/Article"
+      <BlogGrid>
+        {posts.map(({ node }) => {
+          const title = node.frontmatter.title || node.fields.slug
+          return (
+            <BlogArticle
+              key={node.fields.slug}
+              itemScope
+              itemType="http://schema.org/Article"
+            >
+              <BlogLink
+                style={{ boxShadow: `none` }}
+                to={`/blog${node.fields.slug}`}
+                itemProp="url"
               >
-                <BlogLink
-                  style={{ boxShadow: `none` }}
-                  to={`/blog${node.fields.slug}`}
-                  itemProp="url"
-                >
+                <div>
                   <header>
                     <BlogTitle>
                       <span itemProp="headline">{title}</span>
@@ -103,18 +108,19 @@ const BlogIndex = ({ data, location }) => {
                       itemProp="description"
                     />
                   </section>
-                  <BlogFoot>
-                    <BlogTime>
-                      <ClockIcon />
-                      {node.timeToRead} mins
-                    </BlogTime>
-                    <span>{node.frontmatter.date}</span>
-                  </BlogFoot>
-                </BlogLink>
-              </BlogArticle>
-            )
-          })}
-        </BlogGrid>
+                </div>
+                <BlogFoot>
+                  <BlogTime>
+                    <ClockIcon />
+                    {node.timeToRead} mins
+                  </BlogTime>
+                  <span>{node.frontmatter.date}</span>
+                </BlogFoot>
+              </BlogLink>
+            </BlogArticle>
+          )
+        })}
+      </BlogGrid>
       <hr
         style={{
           marginBottom: rhythm(1),

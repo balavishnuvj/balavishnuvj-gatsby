@@ -1,0 +1,258 @@
+---
+title: Improving accessibility of forms
+date: "2020-10-31T11:38:10.820Z"
+description:
+  "Building an accessible login form to reduce drop offs and better UX"
+---
+
+import { BadForm, OkForm, BetterForm } from "./components.jsx"
+
+Forms are an essential part of the web. Most of us would have built at least one
+form per app. For me, it has been one of the most difficult part in developing
+any app in web. Most of the applications we build would also have some kind of
+sign up/ login forms. Often they are not accessible and/or leaves a lot to be
+desired in terms of UX.
+
+Let us try to understand this by creating a login form.
+
+### Bad
+
+This is a not so good version of a login form. It is not accessible nor user
+friendly. Form won't submit if you hit return key, it won't suggest email in the
+email field. And in a real world app, it won't even prompt to save password.
+
+_Go ahead and try it yourself!_ **It is interactable!!! 🥳**
+
+<BadForm />
+
+---
+
+```jsx
+function Form() {
+  const [state, setState] = React.useState({})
+  function handleChange(name, value) {
+    setState(current => ({ ...current, [name]: value }))
+  }
+  function handleSubmit() {
+    alert(JSON.stringify(state))
+  }
+  return (
+    <div>
+      <h3>Login</h3>
+      <div>
+        <span>Email</span>
+        <input
+          onChange={event => handleChange("username", event.target.value)}
+        />
+      </div>
+      <div>
+        <span>Password</span>
+        <input
+          type="password"
+          placeholder="password"
+          onChange={event => handleChange("password", event.target.value)}
+        />
+      </div>
+      <div onClick={handleSubmit}>Login</div>
+    </div>
+  )
+}
+```
+
+And here how it would look in action. This is not an exaggerated code. The above
+code sample is what I have seen in a real-world application. This is how NOT to
+build a form.
+
+This form is broken (not accessible at all), let us make this form work. We need
+some basic functionality like suggest emails, accessible by keyboard and screen
+readers, ability to submit form by hiting return key etc.
+
+### Good
+
+To improve accessibility and UX. We can achieve this by using semantic elements,
+instead of using `<div>`'s for everything.
+
+Let's use `<form>` to wrap our forms, `<label>` for labels of input (placeholders
+are not enough), and `<button>` for buttons. This might seem very obvious, but
+there are plenty of websites which don't follow this.
+
+_Go ahead and try it yourself!_
+
+<OkForm />
+
+---
+
+```diff
+function Form() {
+-  const [state, setState] = React.useState({})
+-  function handleChange(name, value) {
+-    setState(current => ({ ...current, [name]: value }))
+-  }
+  function handleSubmit(event) {
+-    alert(JSON.stringify(state))
++    event.preventDefault()
++    const { elements } = event.target
++    const { email, password } = elements
++    alert(JSON.stringify({ email: email.value, password: password.value }))
+  }
+
+  return (
+-    <div>
++    <form onSubmit={handleSubmit}>
+      <h3>Login</h3>
+      <section>
+-        <span>Email</span>
++        <label htmlFor="email">Email</label>
+       <input
+-          placeholder="E-Mail"
+-          onChange={event => handleChange("username", event.target.value)}
++          id="email"
++          name="email"
++          type="email"
++          required
+        />
+      </section>
+      <section>
+-        <span>Password</span>
++        <label htmlFor="password">Password</label>
+        <input
+          type="password"
+-          placeholder="password"
+-          onChange={event => handleChange("password", event.target.value)}
++          id="password"
++          name="password"
++          required
+       />
+      </section>
+-      <div onClick={handleSubmit}>Login</div>
++      <button id="login" type="submit">
++       Login
++      </button>
+-    </div>
++    <form>
+  )
+}
+```
+
+Both these forms look very similar. But they are miles apart when it comes to
+accessibility. Now input has proper labels, screen readers can now read labels
+correctly. And we get tons of bonus features too 🕺.
+
+- When we click/tap on the label, the corresponding input is focussed.
+
+- We don't have to maintain state value if we don't need to. We can get all
+  field values from `event.target.elements[NAME_OF_THE_FIELD]`
+
+- We can submit the form by hitting the enter/return key.
+
+Also we can get browsers to prompt save password. To get that working, we should
+let the browser know that the form submit was successful. We can do that by
+either navigating to a new page. Or by calling `history.pushState` or
+`history.replaceState` and `<form>` needs to be removed from the page.
+
+Hold on, that's not it. We can make it better. 🤯
+
+### Better
+
+We can improve this by letting the browser know what kind of value we are
+expecting from these fields. For that we can use `autocomplete` attribute.
+
+_Go ahead and try it yourself!_
+
+<BetterForm />
+
+---
+
+```diff
+function Form() {
+  function handleSubmit(event) {
+    event.preventDefault()
+    const { elements } = event.target
+-    const { email, password } = elements
++    const { email, "current-password": password } = elements
+    alert(JSON.stringify({ email: email.value, password: password.value }))
+  }
+  return (
+    <form onSubmit={handleSubmit}>
+      <h3>Login</h3>
+      <section>
+        <label htmlFor="email">Email</label>
+        <input
+          id="email"
+          name="email"
+          type="email"
++         autoComplete="username"
+          required
+        />
+      </section>
+      <section>
+        <label htmlFor="password">Password</label>
+        <input
+-          id="password"
+-          name="password"
++          id="current-password"
++          name="current-password"
++          autoComplete="current-password"
+          type="password"
+          required
+        />
+      </section>
+      <button id="login" type="submit">
+        Login
+      </button>
+    </form>
+  )
+}
+```
+
+Autocomplete makes the UX a lot better. Few other values which might be helpful
+for sign-up. for eg.
+
+```jsx
+// for new passwords
+  <input
+    // ...other fields
+    autoComplete="new-password"
+  />
+
+  // for OTPs
+  <input
+    // ...other fields
+    autoComplete="one-time-code"
+  />
+```
+
+`new-password` is interesting and required because it wouldn't prefill existing
+password in password reset scenario or if someone else is trying to sign-up from
+the same machine. And the cool thing about `new-password` is modern browsers
+will suggest secure passwords.
+
+`autocomplete` is a nice feature which we forget to use most of the time. This
+helps in assisting the user in filling out the form reliably (avoid typos) and
+faster. There are around ~50 possible values for auto-complete. Check them out
+at
+[MDN](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/autocomplete).
+
+There are a lot of things we can improve. Listing down a few
+
+- use `aria-describedby` to describe any specific constraint on the field. eg.
+  Password has to 8 chars.
+- use `autofocus` in the input, if that is the first input of the form that user
+  would be filling etc. eg. username in our login form.
+- other UX improvements like size, the contrast of the text. Would recommend
+  checking [Web Vitals](https://web.dev/vitals/). Only add login if your
+  application really needs it.
+
+## TL;DR
+
+Use semantic HTML; `form` for forms, `button` for buttons etc. Make it
+accessible by having proper labels (aria properties too). UX can be improved by
+using the `autocomplete` attribute of the input.
+
+This might seem very small, but we often miss this. Let us check the apps we
+have developed are accessible or not. We should try to make our apps more
+accessible. By far this is not enough but this is a good start.
+
+I have focussed on Login/Sign-Up forms, but this can be translated to any forms
+you make. Drop-offs in Sign Up could be drastically improved with these minor
+changes. Let me know if this helped your application.
