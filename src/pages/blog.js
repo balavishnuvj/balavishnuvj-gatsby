@@ -1,11 +1,10 @@
 import React from "react"
 import { Link, graphql } from "gatsby"
-
 import Bio from "../components/bio"
 import SEO from "../components/seo"
 import PageInfo from "../components/PageInfo"
 import { rhythm } from "../utils/typography"
-import styled from "styled-components"
+import styled, { css } from "styled-components"
 import Clock from "../../content/assets/svg/clock.svg"
 
 const ClockIcon = styled(Clock)`
@@ -20,6 +19,7 @@ const ClockIcon = styled(Clock)`
 const BlogGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+  grid-gap: 16px;
   margin-bottom: 24px;
   @media (max-width: 699px) {
     grid-template-columns: 1fr;
@@ -76,45 +76,45 @@ const BlogIndex = ({ data, location }) => {
         title="Blogs"
         description="Thoughts and opinions about programming, React, JavaScript and other interesting things."
       />
-      <BlogGrid>
-        {posts.map(({ node }) => {
-          const title = node.frontmatter.title || node.fields.slug
-          return (
-            <BlogArticle
-              key={node.fields.slug}
-              itemScope
-              itemType="http://schema.org/Article"
-            >
-              <BlogLink
-                style={{ boxShadow: `none` }}
-                to={`/blog${node.fields.slug}`}
-                itemProp="url"
+        <BlogGrid>
+          {posts.map(({ node }) => {
+            const title = node.frontmatter.title || node.fields.slug
+            return (
+              <BlogArticle
+                key={node.fields.slug}
+                itemScope
+                itemType="http://schema.org/Article"
               >
-                <header>
-                  <BlogTitle>
-                    <span itemProp="headline">{title}</span>
-                  </BlogTitle>
-                </header>
-                <section>
-                  <BlogExcerpt
-                    dangerouslySetInnerHTML={{
-                      __html: node.frontmatter.description || node.excerpt,
-                    }}
-                    itemProp="description"
-                  />
-                </section>
-                <BlogFoot>
-                  <BlogTime>
-                    <ClockIcon />
-                    {node.timeToRead} mins
-                  </BlogTime>
-                  <span>{node.frontmatter.date}</span>
-                </BlogFoot>
-              </BlogLink>
-            </BlogArticle>
-          )
-        })}
-      </BlogGrid>
+                <BlogLink
+                  style={{ boxShadow: `none` }}
+                  to={`/blog${node.fields.slug}`}
+                  itemProp="url"
+                >
+                  <header>
+                    <BlogTitle>
+                      <span itemProp="headline">{title}</span>
+                    </BlogTitle>
+                  </header>
+                  <section>
+                    <BlogExcerpt
+                      dangerouslySetInnerHTML={{
+                        __html: node.frontmatter.description || node.excerpt,
+                      }}
+                      itemProp="description"
+                    />
+                  </section>
+                  <BlogFoot>
+                    <BlogTime>
+                      <ClockIcon />
+                      {node.timeToRead} mins
+                    </BlogTime>
+                    <span>{node.frontmatter.date}</span>
+                  </BlogFoot>
+                </BlogLink>
+              </BlogArticle>
+            )
+          })}
+        </BlogGrid>
       <hr
         style={{
           marginBottom: rhythm(1),

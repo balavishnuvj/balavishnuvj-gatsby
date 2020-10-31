@@ -58,6 +58,13 @@ const GlobalStyle = createGlobalStyle`
         `
       }
     }
+    pre,
+    code {
+      * {
+        font-family: SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
+        'Courier New', monospace; 
+      }
+    }
   }
 `
 

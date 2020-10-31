@@ -6,7 +6,8 @@ import SEO from "../components/seo"
 import { rhythm, scale } from "../utils/typography"
 import styled from "styled-components"
 import Clock from "../../content/assets/svg/clock.svg"
-
+import { MDXProvider } from "@mdx-js/react"
+import mdxComponents from "../components/mdxComponents"
 export const BlogSection = styled.section`
   > blockquote {
     color: ${props => props.theme.quoteColor};
@@ -31,6 +32,12 @@ export const BlogSection = styled.section`
   h5:hover .anchor svg,
   h6:hover .anchor svg {
     opacity: 1;
+  }
+  .highlight-line {
+    background-color: rgba(201, 167, 255, 0.2);
+    margin: 0 -10px;
+    padding: 0 5px;
+    border-left: 5px solid #c9a7ff;
   }
 `
 
@@ -60,7 +67,6 @@ const BlogTime = styled.p`
 `
 
 const BlogPostTemplate = ({ data, pageContext, location }) => {
-  console.log("LOG: : BlogPostTemplate -> data", data)
   if (!data.mdx) {
     return null
   }
@@ -74,37 +80,39 @@ const BlogPostTemplate = ({ data, pageContext, location }) => {
         title={post.frontmatter.title}
         description={post.frontmatter.description || post.excerpt}
       />
-      <article itemScope itemType="http://schema.org/Article">
-        <header>
-          <h1
-            itemProp="headline"
+      <MDXProvider components={mdxComponents}>
+        <article itemScope itemType="http://schema.org/Article">
+          <header>
+            <h1
+              itemProp="headline"
+              style={{
+                marginTop: rhythm(1),
+                marginBottom: 0,
+              }}
+            >
+              {post.frontmatter.title}
+            </h1>
+            <BlogFoot>
+              <BlogTime>
+                <ClockIcon />
+                {post.timeToRead} mins |{" "}
+              </BlogTime>
+              <span>{post.frontmatter.date}</span>
+            </BlogFoot>
+          </header>
+          <BlogSection>
+            <MDXRenderer>{post.body}</MDXRenderer>
+          </BlogSection>
+          <hr
             style={{
-              marginTop: rhythm(1),
-              marginBottom: 0,
+              marginBottom: rhythm(1),
             }}
-          >
-            {post.frontmatter.title}
-          </h1>
-          <BlogFoot>
-            <BlogTime>
-              <ClockIcon />
-              {post.timeToRead} mins |{" "}
-            </BlogTime>
-            <span>{post.frontmatter.date}</span>
-          </BlogFoot>
-        </header>
-        <BlogSection>
-          <MDXRenderer>{post.body}</MDXRenderer>
-        </BlogSection>
-        <hr
-          style={{
-            marginBottom: rhythm(1),
-          }}
-        />
-        <footer>
-          <Bio />
-        </footer>
-      </article>
+          />
+          <footer>
+            <Bio />
+          </footer>
+        </article>
+      </MDXProvider>
 
       <nav>
         <ul
