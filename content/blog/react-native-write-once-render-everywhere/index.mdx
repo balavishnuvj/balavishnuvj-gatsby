@@ -1,0 +1,179 @@
+---
+title: React Native - Write Once, Render Everywhere
+date: "2020-11-03T18:30:00.000Z"
+description:
+  "We know that React Native share a lot code between each platforms. But how
+  much should you share?"
+---
+
+React Native gives you incredible power to share code between multiple
+platforms. Even though the library natives supports only Android and iOS
+application. It is not that difficult to support the web.
+
+## How to share code
+
+React Native makes it convenient to share code across platforms.
+
+So by default in React Native can share the code between Android and iOS. But we
+might not want to share complete 100% of the code in all these platforms (for
+any reason).
+
+And to share the code with Web, we can bring in any web project, let's say CRA
+into a React Native CLI app. We should be good to go. We will talk more about a
+bit later.
+
+## Platform specific code
+
+Okay, if you are planning to merge web, android, and iOS into one single code
+base. Let's see if we have considered everything.
+
+### Android, iOS and Others(Web)
+
+There are a couple of ways to have platform-specific code.
+
+If it is minor inline change, we can do something like this.
+
+```js
+import { Platform, StyleSheet } from "react-native"
+
+if (Platform.OS === "ios") {
+  // do something
+} else {
+  // do something else
+}
+
+// we can also do
+const data = Platform.select({
+  ios: {
+    ownedBy: "Apple",
+  },
+  android: {
+    ownedBy: "Google",
+  },
+  default: {
+    ownedBy: "Me",
+  },
+})
+// when running for iOS data = { ownedBy: "Apple" }
+// and for android  data = { ownedBy: "Google" }
+// and for all other cases = { ownedBy: "Me" }
+
+// If want code same for android and ios, and different for Web.
+
+const data = Platform.select({
+  native: {
+    ownedBy: "Corporate",
+  },
+  default: {
+    ownedBy: "Me",
+  },
+})
+```
+
+I wouldn't use it more often, might get hard to track. Just from a
+maintainability point of view. Try to use as minimum as possible.
+
+I would prefer if a complete module(or a function) is switched instead, we can
+achieve that by
+
+```js
+/*
+└── Button
+    ├── index.js
+    ├── index.native.js
+    ├── index.android.js
+    └── index.ios.js
+*/
+
+import Button from "./Button"
+// <Button />
+```
+
+So for Web, let's say we are using Webpack as the bundler, and for React Native
+metro(default by React native).
+
+So when the metro bundler is looking for a module (module resolution). Let's
+assume that we are running an iOS device it is building for iOS it would start
+looking for **\*.ios.js** (\*.android.js) then **index.native.js** and finally
+**index.js**.
+
+And webpack willresolve the module as we generally do **index.js**. It wouldn't
+even care (or know) about other files (eg. \*.android.js) as we are never
+importing them.
+
+## How much should we share?
+
+So much of code can we share? And more importantly, how much should we share?
+
+There a very interesting projects like
+[react-native-web](https://github.com/necolas/react-native-web), with such
+libraries we can share almost 100% of the code. But should we really resuse all
+100%?
+
+Let's see what kind of code we would have in a typical application
+
+- Platform (eg. Microphone, Location. these are platform-specific)
+- UI/UX (eg. Buttons, Cards, DatePickers)
+- Business logic
+
+**Platform** code can't be re-used. We can write wrapper(or find libraries, few
+of them are inbuilt in React Native), but we can't reuse what is written for
+andriod in iOS. Look into
+[Native Modules](https://reactnative.dev/docs/native-modules-setup) for more
+details on how to write React Native Modules.
+
+**UI/UX** This is very interesting to me, on the surface, it looks like we can
+share almost 100% of the UI in all platforms. I advise against it.
+
+The primary reason is, user's of a specific platform is used to specific kind of
+UI/UX patterns. A Web user expectation of clicking a link in an app might be
+different from an iOS user. How navigation works might be different. Look at
+[this](https://github.com/react-native-datetimepicker/datetimepicker) example of
+how UI/UX for a date picker is different for iOS and Android. Or how the
+[button](https://reactnative.dev/docs/button) looks and behaves differently.
+
+Because of the different expectation of the user in each platform, and if you
+try to build a UI/UX that works for everyone. You might be making an application
+that isn't great for anyone.
+
+But how much you can share would depend completely based on how your
+application's design language. Let you UI designers design based on the
+platform, not the tech stack.
+
+**Business logic** is the best part of React and Hooks made it better. We should
+be able to share almost 100% of our Business logic. Custom hooks makes it so
+much easier for sharing logic.
+
+You should be aware of not all web platform APIs are poly-filled for React
+Native. for eg. `window.setTimeout` is but `window.localStorage` isn't. When you
+making reusable hooks, make sure you are considering them.
+
+## So that's it?
+
+All we can share is some logic? Not really you can share UI too, but I would
+recommend not to lean into that it too much. Even considering the difference in
+UI/UX you might still be able to share about 60-70% of the UI code/components.
+
+_Note: Almost all the component provided in React Native, follow this pattern of
+following the UI/UX of how the platform prefers and have the same API to handle
+them. There are few cases where a particular pattern is supported in only one of
+the platform._
+
+What React Native does very well, is your ability to make that logic and UI
+interact.
+
+```jsx
+import { useCounter } from "./hooks"
+import Button from "./Button" // having different implemention like above
+
+function Counter() {
+  const [count, increment] = useCounter(0)
+  /*onClick will have to aliased to onPress in native implemention*/
+  return <Button onClick={increment}>{count}</Button>
+}
+```
+
+Isn't that awesome? We have the UI/UX that each user of each platform prefer and
+we can share as much code as possible.
+
+Let's build an application that is as great as possible for every platform.
