@@ -25,6 +25,7 @@ const Highlighted = styled.span`
 `
 
 const Image = styled.img`
+  border-radius: 8px;
   @media (max-width: 699px) {
     width: ${rhythm(15)};
     margin: 0 auto;
@@ -64,10 +65,10 @@ export default function Projects({ ...props }) {
       <ProjectsGrid>
         <div>
           <p>
-            Hello! I am <Highlighted>Balavishnu V J</Highlighted> 👋🏾(I know my
-            name is a mouth full you can call me Bala), software engineer with
-            3+ years of experience in building web applications. I'm based out
-            of Bengaluru(Bangalore), India🌏.
+            Hello! I am <Highlighted>Balavishnu V J</Highlighted> 👋🏾(friends
+            call me Bala), software engineer with 3+ years of experience in
+            building web applications. I'm based out of Bengaluru(Bangalore),
+            India🌏.
           </p>
           <p>
             Soon after graduation👨🏼‍🎓from Vellore Institute of Technology in{" "}

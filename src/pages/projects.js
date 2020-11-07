@@ -42,13 +42,13 @@ const ViewLink = styled.a`
 
 const ProjectHeading = styled.h3`
   margin: 0;
-  font-size: 16px;
+  font-size: 18px;
   color: ${props => props.theme.primaryColor};
 `
 
 const ProjectSubHeading = styled.h3`
   margin: 0;
-  font-size: 14px;
+  font-size: 16px;
   color: ${props => props.theme.quoteColor};
   margin-top: 12px;
 `
@@ -59,7 +59,7 @@ const ProjectInfo = styled.div`
 
 const ProjectDesc = styled.p`
   max-width: 80%;
-  font-size: 12px;
+  font-size: 14px;
   margin: 0;
   margin-bottom: 12px;
 `

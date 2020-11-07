@@ -1,0 +1,153 @@
+---
+title: "Testing: Building application with confidence"
+date: "2020-11-08T18:30:00.000Z"
+description:
+  "Tests help us building application faster. Here are few tips to help you
+  write them better."
+---
+
+In early 2017, I started my career as a Frontend Developer. As a beginer in
+writing React applications. I never understood why exactly am I writing these
+tests? Why am I writing more code to test the code I wrote before?
+
+I used to write tests something like this
+
+```jsx
+it("Test click event", () => {
+  const mockHandleClick = jest.fn()
+  const button = shallow(
+    <Button onClick={mockHandleClick} variant="primary">
+      Click Me!
+    </Button>
+  )
+  button.find("button").simulate("click")
+  expect(mockHandleClick).toHaveBeenCalledTimes(1)
+  expect(button.props().variant).toBe("primary")
+})
+```
+
+So for quite some time, I didn't understand what exactly am I benefitting from
+writing tests. And at the time I was working for a client, they said we need to
+write tests. Only metric they ever cared was code coverage. So we wrote tests to
+improve code coverage. That was pretty easy to achieve.
+
+And then I came across this tweet. And maybe a few more blogs.
+
+<blockquote class="twitter-tweet">
+  <p lang="en" dir="ltr">
+    The more your tests resemble the way your software is used, the more
+    confidence they can give you.
+  </p>
+  &mdash; Kent C. Dodds 🚀 (@kentcdodds) <a href="https://twitter.com/kentcdodds/status/977018512689455106?ref_src=twsrc%5Etfw">March 23, 2018</a>
+</blockquote>
+
+And realised that my tests weren't resembling how my users were using the app,
+it was more about how a feature was implemented.
+
+Then I spent a few weeks fiddling around
+[React Testing Library](https://testing-library.com/docs/react-testing-library/intro).
+It didn't just teach about testing react applications. It taught me the guiding
+principles of testing.
+
+### Few take aways from what I learned.
+
+#### Test should resemble how it is used
+
+Never test the implementation detail, when you are testing function or a
+component or anything. You should be able to test its functionality by the APIs
+it exposes for regular users. In the case of React components, it is `props`. So
+you should be able to test every use case by changing `props`. In-case of
+functions, by changing `params` you should be able to test its functionality.
+
+This means it doesn't matter whether it class or functional components. Whether
+it is using hooks or not, all you have is `props`.
+
+There are a few other libraries than react testing library itself that would
+help. Couple of them I find most interesting are:
+
+1. [User Event](https://github.com/testing-library/user-event), it tries to mock
+   all the events when an event happens. eg. When a user is typing key-down,
+   key-up events are fired.
+
+2. [Mock Service Worker](https://mswjs.io), it helps in mocking out the request
+   irrespective of what library I am using to make network requests. Doesn't
+   matter if it is `axios`, `fetch` or anything else for that matter.
+
+#### More integration tests than unit tests
+
+I'm not a fan of testing implementation of each component (Unit Testing), would
+prefer testing integration of components. Usually, these tests are focused on a
+page. I'm not saying unit tests are not required. I use them to test the
+functionality of a highly used component for every possible corner cases.
+
+In most cases, integration tests are more than enough. Here you are restricted
+by interacting to the page by user events. Like find this component and type
+`hello` or find button `Submit` and click on it.
+
+This way of testing is very powerful because it does not assume how you have
+implemented the component. For now, you might have a third party design library
+rendering the button. Later you would refactor to use your implementation of the
+button. No matter what refactoring you do, your tests stay the same.
+
+#### While refactoring, don't change test and implementation at the same time.
+
+We love refactoring the code written by the previous developers 😉. You must
+never change your application code and the tests written for them in the same
+Pull Request.
+
+If you have to change the tests (in a significant way) while refactoring, then
+you might be testing its implementation. Such tests are brittle and gives you
+less confidence.
+
+#### Mock what needs to be mocked
+
+Your tests have to be predictable. For a given test no matter what when it runs
+or how many times it runs. If it fails once it should always fail. If it passes
+once it should always pass.
+
+You would need to mock network calls (APIs) to bring consistency across. There
+are lot of things that could go wrong, network might fail, server might be slow
+and so on. You should mock them so that your tests are consistent. You wouldn't
+mock APIs in e2e tests though. You might want to mock rate limited APIs or
+payment APIs.
+
+You might want to mock, timers too. This is not because they would be
+inconsistent. It is because you want your tests to run faster.
+
+Other thing you might want to mock is date, this is something most devs forget
+to do 😅. How many of your tests broke on New year's? 😉 You shouldn't care
+about when and where your tests are run. So mock "now" in your test.
+
+eg.
+
+```js
+// `getDisplayDate` would return `yesterday`, today, `tomorrow`
+// or Oct 27th depending when it called
+getDisplayDate("2020-10-27")
+```
+
+#### Make sure tests fail
+
+It is more important for your test to fail than it to pass. In TDD it would be
+part of the procees. Even if you are not following TDD make sure your tests
+fail. While writing these tests, make sure you test that they fail when they are
+intended to fail. Change your code/test to make sure they are failing.
+
+### Now I know why I am testing
+
+Now my tests look more like
+
+```js
+render(<Page1 />)
+const submitButton = screen.getByRole("button", {
+  name: /submit/i,
+})
+userEvent.click(submitButton)
+await screen.findByText(/submitted/i)
+```
+
+And now it makes sense why I am writing more code to test my code. I am making
+sure my application won't break on a Friday night push.
+
+Let's add tests that gives us confidence in pushing code, rather than just
+increasing code coverage.

@@ -12,7 +12,6 @@ const Button = styled.button`
   justify-content: center;
   transition: opacity 0.3s ease;
   border: none;
-  outline: none;
   background: none;
   cursor: pointer;
   padding: 0;

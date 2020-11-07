@@ -27,9 +27,12 @@ const BlogGrid = styled.div`
 `
 
 const BlogTitle = styled.h4`
-  font-size: 14px;
+  font-size: 16px;
   margin: 0;
   margin-bottom: 16px;
+  color: ${props => props.theme.primaryColor};
+  text-transform: none;
+  line-height: 1.5;
 `
 
 const BlogLink = styled(Link)`
@@ -49,7 +52,7 @@ const BlogArticle = styled.article`
 `
 
 const BlogExcerpt = styled.p`
-  font-size: 12px;
+  font-size: 14px;
 `
 
 const BlogFoot = styled.section`

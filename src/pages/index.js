@@ -99,7 +99,9 @@ const Description = styled.p`
 export const H5 = styled.h5`
   color: ${props => props.theme.primaryColor};
   margin: 0;
+  margin-top: 8px;
   margin-bottom: 28px;
+  font-size: 16px;
 `
 
 const HireMeLink = styled(Link)`
@@ -116,6 +118,10 @@ const HireMeLink = styled(Link)`
   color: ${props => props.theme.primaryColor};
   margin-left: ${rhythm(1)};
   box-shadow: none;
+`
+
+const MessageLink = styled.a`
+  color: ${props => (props.theme.isDark ? "#003553" : "#58bbfd")};
 `
 
 export default function Home({ ...props }) {
@@ -156,8 +162,11 @@ export default function Home({ ...props }) {
               Balavishnu V J is a software engineer based in Bengaluru, India
               specializing in building websites and applications. Passionate
               about making the world a better place by solving problems using
-              technology. If you would like to get in touch or just want to have
-              a chat, shoot me a <a href={twitter}>message</a>.
+              technology.
+              <p>
+                If you would like to get in touch or just want to have a chat,
+                shoot me a <MessageLink href={twitter}>message</MessageLink>.
+              </p>
             </Description>
           </StripedBackground>
         </LeftSection>

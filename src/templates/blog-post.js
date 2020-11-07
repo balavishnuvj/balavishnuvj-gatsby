@@ -39,6 +39,13 @@ export const BlogSection = styled.section`
     padding: 0 5px;
     border-left: 5px solid #c9a7ff;
   }
+  code {
+    font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+      "Courier New", monospace;
+    background-color: ${props => props.theme.cardBackground};
+    color: ${props => props.theme.quoteColor};
+    padding: 4px;
+  }
 `
 
 const ClockIcon = styled(Clock)`

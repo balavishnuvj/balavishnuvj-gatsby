@@ -11,6 +11,7 @@ const Link = styled(GatsbyLink)`
   color: ${props => props.theme.textColor};
   background-color: ${props => props.theme.primaryBackground};
   &:hover {
+    font-weight: bold;
     color: ${props => props.theme.primaryColor};
   }
 `

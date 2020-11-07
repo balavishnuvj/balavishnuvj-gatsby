@@ -40,6 +40,15 @@ const iconStyles = css`
   rect {
     stroke: ${props => props.theme.iconColor};
   }
+  &:hover {
+    transform: scale(1.2);
+    .fill {
+      fill: ${props => props.theme.primaryColor};
+    }
+    rect {
+      stroke: ${props => props.theme.primaryColor};
+    }
+  }
 `
 
 const LinkedInIcon = styled(LinkedIn)`
@@ -58,6 +67,7 @@ const EmailLink = styled.a`
   color: ${props => props.theme.textColor};
   &:hover {
     color: ${props => props.theme.primaryColor};
+    font-weight: bold;
   }
 `
 
