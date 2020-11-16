@@ -1,0 +1,285 @@
+---
+title: "Integration tests with MSW"
+date: "2020-11-16T18:30:00.000Z"
+description:
+  "Let your tests mock network requests not stub libraries. Mock Service
+  Worker(MSW) would help us."
+---
+
+I prefer writing more integration tests than unit tests. I talk about the same
+in
+[Testing: Building application with confidence](https://balavishnuvj.com/blog/testing-building-application-with-confidence/).
+While writing integration tests, you might have nested child component that is
+making some network API calls. And that becomes bit difficult to mock when you
+don't know/care which component is making API calls.
+
+There isn't an easy way to know if there are any APIs that are mocked or not.
+
+```js
+import axios from "axios"
+
+export const USER_API_ENDPOINT = "/api/v1/user"
+export const DETAIL_API_ENDPOINT = "/api/v1/detail"
+
+export function fetchUser() {
+  return axios.get(API_ENDPOINT)
+}
+
+export function fetchDetail() {
+  return axios.get(DETAIL_API_ENDPOINT)
+}
+```
+
+Let's say we have these API calls somewhere in our application. Even after we
+identify that we have two API calls made from some nested child component.
+Mocking them isn't that easy either.
+
+We either have to find an `axios` mocking library or do some magic 🔮 to get all
+these mocks to work. We might have to do something like this
+
+```js {9-11}
+jest.mock("axios")
+
+axios.get.mockImplementation(url => {
+  switch (url) {
+    case "/api/v1/user":
+      return Promise.resolve({ result: { user: "foo" } })
+    case "/api/v1/detail":
+      return Promise.resolve({ result: { detail: "bar" } })
+    default:
+      return Promise.reject(new Error(`${url} doesn't have a mock defined`))
+  }
+})
+
+test("should successfully fetch user", () => {
+  // test assertions
+})
+
+test("should successfully fetch details", () => {
+  // test assertions
+})
+
+test("should fail fetch user", () => {
+  // test assertions
+})
+```
+
+This works fine, but now how would you change the mocks for a particular test
+case. At this point, we could use libraries like
+[nock](https://github.com/nock/nock). But it needs additional adapters if we are
+using libraries like `axios`.
+
+Even after going through all of this, when we have to update libraries, switch
+from `axios` to `fetch` or to any new shiny library, I will have to
+update/rewrite all these tests.
+
+And another major problem I have faced is when we use any third-party SDKs. And
+they make API calls. We can't mock them reliably. Also, it is difficult to
+detect the API calls it is making.
+
+So the problems I was facing are:
+
+1. Detecting all the API calls made.
+2. Handling different mock results for a particular test case.
+3. Changing mock for a particular test case.
+4. Handling third-party APIs (or SDKs)
+5. Tests were fragile for refactoring to a new or upgrading library
+
+### MSW to rescue
+
+Need not be said, I wasn't happy with the tests we were writing. During this
+time I came across the [Mock Service Worker](https://mswjs.io/) library. It was
+officially recommended by [React Testing library](https://testing-library.com/)
+for mocking APIs.
+
+So I fiddled around `MSW` for some time. To see if it solves my problem. And it
+did solve the problems I listed above.
+
+I realised within a few minutes of trying out `MSW`, that I was mocking networks
+calls. And earlier I was just stubbing/monkey patching implementation of network
+request making libraries.
+
+This is amazing 🕺, I don't know why we didn't have MSW. And why wasn't it a
+thing until recently?
+
+**1. Detecting all the API calls made.**
+
+I have this running in `setupFilesAfterEnv` of jest
+
+```js {9-11}
+// test-utils
+import { setupServer } from "msw/node"
+
+export const server = setupServer()
+
+// setup-after-env
+import { server } from "test-utils"
+beforeAll(() => {
+  server.listen({
+    onUnhandledRequest: "warn",
+  })
+})
+
+afterEach(() => {
+  server.resetHandlers()
+})
+
+afterAll(() => {
+  server.close()
+})
+```
+
+So `onUnhandledRequest` in `server.listen` helps me in detecting API calls those
+are not mocked.
+
+**2. Handling different mock results each one of them.**
+
+We can attach handlers to `MSW` "server" to respond to the API endpoints. Let's
+update those tests we wrote in the beginning, and see how it looks now.
+
+```js
+import { server } from "test-utils"
+
+beforeEach(() => {
+  server.use(
+    rest.get("/api/v1/user", (req, res, ctx) => {
+      return res(ctx.json({ result: { user: "foo" } }))
+    }),
+    rest.get("/api/v1/detail", (req, res, ctx) => {
+      return res(ctx.json({ result: { detail: "bar" } }))
+    })
+  )
+})
+
+test("should successfully fetch user", () => {
+  // test assertions
+})
+
+test("should successfully fetch details", () => {
+  // test assertions
+})
+```
+
+**3. Changing mock for a particular test case.**
+
+We can use `server.use` to update the API response in each test cases. If we
+want this to apply only once, we can also do `res.once`.
+
+```js {23-29}
+import { server } from "test-utils"
+
+beforeEach(() => {
+  server.use(
+    rest.get("/api/v1/user", (req, res, ctx) => {
+      return res(ctx.json({ result: { user: "foo" } }))
+    }),
+    rest.get("/api/v1/detail", (req, res, ctx) => {
+      return res(ctx.json({ result: { detail: "bar" } }))
+    })
+  )
+})
+
+test("should successfully fetch user", () => {
+  // test assertions
+})
+
+test("should successfully fetch details", () => {
+  // test assertions
+})
+
+test("should fail fetch user", () => {
+  server.use(
+    rest.get("/api/v1/user", (req, res, ctx) => {
+      return res.once(
+        ctx.status(500),
+        ctx.json({ message: "Internal server error" })
+      )
+    })
+  )
+  // test assertions
+})
+```
+
+**4. Handling thirdparty APIs (or SDKs)**
+
+When it comes to handling API calls for third-party APIs, it is exactly same as
+we would do for our APIs.
+
+```js
+server.use(
+  rest.get("https://www.somethirdpartyapi.com/api/foo", (req, res, ctx) => {
+    return res(ctx.json({ result: "Third party response" }))
+  })
+)
+```
+
+But sometimes, we would be using third-party SDKs. In such cases, the endpoint
+used to make API call is an implementation detail of the SDK. We shouldn't be
+testing based on that. So we could do something like
+
+```js
+import { server } from "test-utils"
+import { sdk } from "./handlers/sdk"
+
+server.use(
+  sdk("ListResources", (req, res, ctx) => {
+    return res(ctx.json({ id: 1 }))
+  })
+)
+```
+
+Look at
+[Custom request handler](https://mswjs.io/docs/recipes/custom-request-handler)
+more details.
+
+**5. Tests were fragile for refactoring to a new or upgrading library**
+
+So let's remove `axios` and use `fetch` instead. And let's see what we need to
+update in our tests.
+
+```diff
+-import axios from "axios"
++async function fetchGet(url) {
++  const response = await fetch(url);
++  const json = await response.json();
++  return json;
++}
+
+export const USER_API_ENDPOINT = "/api/v1/user"
+export const DETAIL_API_ENDPOINT = "/api/v1/detail"
+
+export function fetchUser() {
+-  return axios.get(API_ENDPOINT)
++  return fetchGet(API_ENDPOINT)
+}
+
+export function fetchDetail() {
+-  return axios.get(DETAIL_API_ENDPOINT)
++  return fetchGet(DETAIL_API_ENDPOINT)
+}
+
+```
+
+You know what, we don't have to change a single character in our tests. This is
+awesome 🥳!!!.
+
+### Conclusion
+
+Mock Service Worker solves most of the problems I have with mocking APIs while
+testing. It need not be just REST APIs, it can do `graphql` requests too.
+
+All those handlers we wrote for testing can be used during development too.
+
+Something I miss from mocking `fetch` or using `nock`, is the ability to assert
+on the request params (such as search params or body). When we mock something,
+we are creating holes in the application. To patch those holes, we would need
+some kind of assertions to make sure our mocks are not tearing apart the
+reality. For eg. When we mock functions, we do check if they were called X
+times, what params was it called with. There are ways to handle it in `msw`, but
+I'm not very happy about the solutions.
+
+We didn't have to know about what libraries were used to make API calls, we
+didn't have to change anything in our code to make API mocks work. This is
+possible because we are not mocking libraries, we are mocking network requests!
+Thank you [Artem Zakharchenko](https://twitter.com/kettanaito) for creating MSW
+👏. It is awesome!
