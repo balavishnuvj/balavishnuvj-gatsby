@@ -6,10 +6,9 @@ description:
   Worker(MSW) would help us."
 ---
 
-I prefer writing more integration tests than unit tests. I talk about the same
-in
+I prefer writing more integration tests than unit tests. I talk about that in
 [Testing: Building application with confidence](https://balavishnuvj.com/blog/testing-building-application-with-confidence/).
-While writing integration tests, you might have nested child component that is
+While writing integration tests, you might have a nested child component that is
 making some network API calls. And that becomes bit difficult to mock when you
 don't know/care which component is making API calls.
 
@@ -70,7 +69,7 @@ case. At this point, we could use libraries like
 using libraries like `axios`.
 
 Even after going through all of this, when we have to update libraries, switch
-from `axios` to `fetch` or to any new shiny library, I will have to
+from `axios` to `fetch` or to any new shiny library, We would have to
 update/rewrite all these tests.
 
 And another major problem I have faced is when we use any third-party SDKs. And
@@ -85,14 +84,14 @@ So the problems I was facing are:
 4. Handling third-party APIs (or SDKs)
 5. Tests were fragile for refactoring to a new or upgrading library
 
-### MSW to rescue
+### MSW to the rescue
 
 Need not be said, I wasn't happy with the tests we were writing. During this
 time I came across the [Mock Service Worker](https://mswjs.io/) library. It was
 officially recommended by [React Testing library](https://testing-library.com/)
 for mocking APIs.
 
-So I fiddled around `MSW` for some time. To see if it solves my problem. And it
+So I fiddled around `MSW` for some time to see if it solves my problem. And it
 did solve the problems I listed above.
 
 I realised within a few minutes of trying out `MSW`, that I was mocking networks

@@ -1,0 +1,267 @@
+---
+title: "Using callbacks in custom hooks"
+date: "2020-11-20T18:30:00.000Z"
+description: "Callbacks in custom hooks can bring out some weird closure bugs. Let us see how we can avoid them."
+---
+
+import {
+  CounterWithMissingDep,
+  CounterWithDeps,
+  DoubleCounter,
+  DoubleCounterWithMemo,
+  DoubleCounterWithStep,
+  FinalDoubleCounter,
+  FinalDoubleCounterWithStep,
+} from "./components.jsx"
+
+React hooks have made sharing application logic easier. We achieve a lot of that
+by creating custom hooks. In this blog, we will talk about using callbacks in a
+custom hook. It is powerful, and it comes with some caveats. I wouldn't call it
+caveats, it comes with a different model of programming with React. We should be
+aware of those "caveats" when we write custom hooks.
+
+Let us learn by example. We will build a custom hook for `setInterval`. We will
+call `useInterval`. The custom hook would do pretty much similar to what
+`setInterval` would do but in a declarative way. It would take a callback and
+interval as arguments and call the callback at the given interval.
+
+The function signature will look like:
+
+```js
+function useInterval(callback, interval) {
+  // implementation of useInterval
+}
+```
+
+So we want to call the callback, after the interval. And clear the interval to
+avoid memory leak and other potential bugs. So a very naive implementation of
+`useInterval` would look like this:
+
+```js
+function useInterval(callback, interval) {
+  useEffect(() => {
+    const id = setInterval(callback, interval)
+    return () => clearInterval(id)
+  }, [interval])
+}
+
+function Counter() {
+  let [count, setCount] = useState(0)
+
+  useInterval(() => {
+    setCount(count + 1)
+  }, 1000)
+  return <h1>{count}</h1>
+}
+```
+
+You might have already seen the problem with the implementation. Let us use this
+version of the hook and see for it ourself.
+
+<CounterWithMissingDep />
+
+---
+
+`callback` is missing from the dependency array, because of that the `count` is
+enclosed on `0`. And because of that, we get the counter to update from `0` to
+`1` after every interval.
+
+```js {5}
+function useInterval(callback, interval) {
+  useEffect(() => {
+    const id = setInterval(callback, interval)
+    return () => clearInterval(id)
+  }, [interval])
+}
+```
+
+We can fix that by adding `callback` to the dependency array.
+
+```js {5}
+function useInterval(callback, interval) {
+  useEffect(() => {
+    const id = setInterval(callback, interval)
+    return () => clearInterval(id)
+  }, [interval, callback])
+}
+```
+
+<CounterWithDeps />
+
+---
+
+So now that app looks like it working, so thats it?
+
+No not really! Lets add another counter, and see how the app works.
+
+```js
+function Counter() {
+  let [count1, setCount1] = useState(0)
+  let [count2, setCount2] = useState(0)
+
+  useInterval(() => {
+    setCount(count1 + 1)
+  }, 1000)
+
+  useInterval(() => {
+    setCount2(count2 + 1)
+  }, 2000)
+
+  return (
+    <h1>
+      {count1}, {count2}
+    </h1>
+  )
+}
+```
+
+<DoubleCounter />
+
+---
+
+You would have noticed that our second counter is never incremented. Why would
+that be the case?
+
+Lets refactor a bit, and see what is happening.
+
+```js
+function Counter() {
+  let [count1, setCount1] = useState(0)
+  let [count2, setCount2] = useState(0)
+
+  function handleFirstCounter() {
+    setCount1(count1 + 1)
+  }
+
+  function handleSecondCounter() {
+    setCount2(count2 + 1)
+  }
+
+  useInterval(handleFirstCounter, 1000)
+  useInterval(handleSecondCounter, 2000)
+
+  return (
+    <h1>
+      {count1}, {count2}
+    </h1>
+  )
+}
+```
+
+It is because of when `count` of our first counter changes, the `Counter`
+component is re rendered. Because of this `callback` is recreated.
+
+So lets list down the what has happens:
+
+1. `count` and `count2` are 0, interval for `1s` and `2s` is set.
+2. After the first second `count1` is updated to `2` and `Counter` is
+   re-rendered.
+3. Causes `handleFirstCounter` and `handleSecondCounter` to be redefined.
+4. Since `useInterval` has `callback` as dependency, it clears the old
+   intervals. For both `count1` and `count2`, a new interval is created.
+5. Interval for `count2` is never called because interval for `count1` gets
+   called before `count2` and handlers are reset.
+
+So we need `callback` to hold the latest state. But we can't list it in
+dependency.
+
+Isn't that `useCallback` is meant for? Let's try wrapping `handleFirstCounter`
+and `handleSecondCounter` in `useCallback` with dependencies as `[]`.
+
+```js
+function Counter() {
+  let [count1, setCount1] = useState(0)
+  let [count2, setCount2] = useState(0)
+
+  const handleFirstCounter = useCallback(() => {
+    setCount1(c => c + 1)
+  }, [])
+
+  const handleSecondCounter = useCallback(() => {
+    setCount2(c => c + 1)
+  }, [])
+
+  useInterval(handleFirstCounter, 1000)
+  useInterval(handleSecondCounter, 2000)
+
+  return (
+    <h1>
+      {count1} {count2}
+    </h1>
+  )
+}
+```
+
+<DoubleCounterWithMemo />
+
+---
+
+So our app is working, but did we solve the problem? We didn't. We just
+prolongated it. `handleFirstCounter`'s reference will change if it is using some
+other state.
+
+for eg.
+
+```js
+const handleFirstCounter = useCallback(() => {
+  setCount1(c => c + step)
+}, [])
+```
+
+<DoubleCounterWithStep />
+
+---
+
+This would again mess up the "stability" of our function. And it would act
+weirdly (a count is missed when the step is changed). Hit the step button
+continuously you should be able see the counter paused.
+
+So here is the solution to our problem. We are saving the callback function in
+ref.
+
+```js {4-7,10-12,14}
+function useInterval(callback, interval) {
+  const callbackRef = useRef()
+
+  useEffect(() => {
+    callbackRef.current = callback // Update ref to the latest callback.
+  }, [callback])
+
+  // Set up the interval.
+  useEffect(() => {
+    function cb() {
+      callbackRef.current()
+    }
+    if (interval !== null) {
+      let id = setInterval(cb, interval)
+      return () => clearInterval(id)
+    }
+  }, [interval])
+}
+```
+
+<FinalDoubleCounterWithStep />
+
+---
+
+We saw that the counter was kind of "paused" in our previous example. And in our
+current example, if you do the same you will find that counter would still work.
+
+Some of you might think, we might want to pause the counter while the `steps` is
+being changed. We can achieve that with setting `interval` as `null`.
+
+**So why does this solution work?**
+
+This solution works because `cb` inside our `useEffect` will never change inside
+the effect. And the effect will only run when the interval changes. And we can
+point to the lastest function by updating the reference
+`callbackRef.current = callback`
+
+This solution also allows us to give the freedom to the user to use
+`useCallback` or `inline` function, our application will work fine.
+
+Ability to pass a function as a parameter is what makes Javascript so powerful.
+We would accept a function as arguments in a custom hook. If your custom hook is
+accepting a function as an argument and that is listed as a dependency to
+`useEffect` or as a callback let us try using `useRef`. It enables us to have a
+better API and stable hook.
