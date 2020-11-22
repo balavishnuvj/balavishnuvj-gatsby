@@ -1,0 +1,205 @@
+---
+title: "Testing Lists Items With React Testing Library"
+date: "2020-11-22T18:30:00.000Z"
+description:
+  "Tests help us building application faster. Here are few tips to help you
+  write them better."
+---
+
+Most of the applications usually have some kind of lists. They are a bit
+different to test as they contain dynamic values. Let's see how we can test them
+using React Testing Library.
+
+We can explore that by an example by a list of Fruits. Here we lists 5 static
+fruits, but this could remain almost same even if we have dynamically updated
+lists.
+
+```jsx
+const fruits = ["Bananas", "Apples", "Strawberries", "Grapes", "Oranges"]
+
+function FruitList() {
+  return (
+    <section>
+      <h1>Fruits</h1>
+      <ul aria-label="fruits">
+        {fruits.map(fruit => (
+          <li key={fruit}>{fruit}</li>
+        ))}
+      </ul>
+    </section>
+  )
+}
+```
+
+Key things to remember📝:
+
+- use `<ul>`, `<ol>` and `<li>` to semantically list items. If you can't use
+  them, at least add appropriate
+  [aria roles](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/List_role).
+- add aria label (`aria-label` and `aria-labelledby`) to `<ul>` or `<ol>` to
+  semantically label what the list is about.
+
+Let us see how we can test this list of fruits. Most often we don't want to test
+exact order in which the elements were rendered or sometimes what exactly the
+items were. In these cases all we need is to see how many elements were
+rendered.
+
+**If you want to just test whether X items are rendered**
+
+```js
+import React from "react"
+import { render, screen, within } from "@testing-library/react"
+
+it("should render list of 5 fruits", () => {
+  render(<FruitList />)
+  const list = screen.getByRole("list", {
+    name: /fruits/i,
+  })
+  const { getAllByRole } = within(list)
+  const items = getAllByRole("listitem")
+  expect(items.length).toBe(5)
+})
+```
+
+We are able to query the the list by
+`screen.getByRole("list", { name: /fruits/i })` because we have labelled the
+`<ul>` with `aria-label="fruits"`.
+
+Once we get the list (`<ul>`), we need to get all the list items rendered under
+the list. We can achieve that by using
+[within](https://testing-library.com/docs/dom-testing-library/api-helpers#within-and-getqueriesforelement-apis)
+(RTL provides this method which can be used to query within an element). Here we
+use it to query all the `listitem` under the `<ul>`. If we are unable to use
+`<li>` or add `listitem` role to the list, you can add `data-testid`. I would
+strongly discourage 👎 as it might not be accessible.
+
+This might not be enough in some cases. We might have lists where you are
+listing the items in chronological order or we have a feature where a list is
+sorted on some conditions. In these cases, we might want to test the order in
+which the elements were rendered. We can achieve that by taking a snapshot of
+the list.
+
+**If you want to test the list as a snapshot**
+
+```jsx
+import React from "react"
+import { render, screen } from "@testing-library/react"
+
+it("should render list of fruits in a specific order by dom snapshot", () => {
+  render(<FruitList />)
+  const list = screen.getByRole("list", {
+    name: /fruits/i,
+  })
+  expect(list).toMatchInlineSnapshot(`
+      <ul
+        aria-label="Fruits"
+      >
+        <li>
+          Bananas
+        </li>
+        <li>
+          Apples
+        </li>
+        <li>
+          Strawberries
+        </li>
+        <li>
+          Grapes
+        </li>
+        <li>
+          Oranges
+        </li>
+      </ul>
+    `)
+})
+```
+
+Here we are testing the snapshot of the DOM, which might not be easy to read
+when the list item is huge. It might have a lot more elements than what we have
+right now. In these cases, we would be better off with testing the name or label
+of each element instead of taking the snapshot of the entire list.
+
+Here we can just pick the `textContent` from the DOM element. This should be
+fine in most of the cases.
+
+**If you want to test important bits of the list**
+
+```jsx
+import React from "react"
+import { render, screen, within } from "@testing-library/react"
+
+it("should render list of fruits in a specific order", async () => {
+  render(<FruitList />)
+  const list = screen.getByRole("list", {
+    name: /fruits/i,
+  })
+  const { getAllByRole } = within(list)
+  const items = getAllByRole("listitem")
+  const fruitNames = items.map(item => item.textContent)
+  expect(fruitNames).toMatchInlineSnapshot(`
+      Array [
+        "Bananas",
+        "Apples",
+        "Strawberries",
+        "Grapes",
+        "Oranges",
+      ]
+    `)
+})
+```
+
+If for some reason, you don't want to use `toMatchInlineSnapshot`, then you
+could also use use `toEqual`.
+
+```js
+expect(fruitNames).toEqual([
+  "Bananas ",
+  "Apples ",
+  "Strawberries ",
+  "Grapes ",
+  "Oranges ",
+])
+```
+
+The benefit we get out of creating the list like `fruitNames` is that we could
+render some non-essential elements in our list and expect our test to pass.
+
+for eg. let's say we made the list to show some image
+
+```diff
+{fruits.map(fruit => (
+    <li key={fruit}>
+      {fruit}
++     <img src={imageSource} alt={fruit} />
+    </li>
+))}
+```
+
+Our tests snapshot will break 💔 because now the list item contains image.
+
+```diff
+  Bananas
++  <img
++    alt="Bananas"
++    src="https://example.com/images/bananas"
++  />
+```
+
+But the tests that test the `textContent` will not break 😱 as we are not adding
+any more text content. Depending on our use case, we can choose either approach.
+I would recommend taking text content (or any other relevant information) from
+the item instead of the complete list. We can add some unit tests to cover what
+exactly is rendered in each list item.
+
+### TL;DR
+
+When testing list items, if you don't care about the order in which the elements
+are rendered. We can test the length of the items rendered. And unit test how
+the list is rendered.
+
+If we care about the ordering, then we can test the snapshot of the list. If the
+list has a lot of elements, we can pick the most important content from the list
+item and test against that. And again, we can test how the list item is rendered
+by unit tests.
+
+Now we know how to test those awesome 🕺 lists you have.
