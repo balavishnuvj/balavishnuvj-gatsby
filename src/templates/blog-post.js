@@ -3,7 +3,7 @@ import { Link, graphql } from "gatsby"
 import { MDXRenderer } from "gatsby-plugin-mdx"
 import Bio from "../components/bio"
 import SEO from "../components/seo"
-import { rhythm, scale } from "../utils/typography"
+import { rhythm } from "../utils/typography"
 import styled from "styled-components"
 import Clock from "../../content/assets/svg/clock.svg"
 import { MDXProvider } from "@mdx-js/react"
@@ -78,8 +78,7 @@ const BlogPostTemplate = ({ data, pageContext, location }) => {
     return null
   }
   const post = data.mdx
-
-  const siteTitle = data.site.siteMetadata.title
+  const { siteMetadata } = data.site
   const { previous, next } = pageContext
   return (
     <React.Fragment>
@@ -89,6 +88,15 @@ const BlogPostTemplate = ({ data, pageContext, location }) => {
       />
       <MDXProvider components={mdxComponents}>
         <article itemScope itemType="http://schema.org/Article">
+          <meta itemProp="name" content={post.frontmatter.title} />
+          <div
+            itemProp="author"
+            itemScope=""
+            itemType="http://schema.org/Person"
+          >
+            <meta itemProp="email" content={siteMetadata.author.name} />
+            <meta itemProp="name" content={siteMetadata.social.email} />
+          </div>
           <div>
             <header>
               <h1
@@ -160,6 +168,12 @@ export const pageQuery = graphql`
     site {
       siteMetadata {
         title
+        author {
+          name
+        }
+        social {
+          email
+        }
       }
     }
     mdx(fields: { slug: { eq: $slug } }) {

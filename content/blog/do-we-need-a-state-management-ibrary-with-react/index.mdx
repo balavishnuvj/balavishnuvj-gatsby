@@ -1,0 +1,130 @@
+---
+title: "Do we need a State Management Library With React?"
+date: "2020-12-01T18:30:00.000Z"
+description: "Know your state before you choose a library to manage it!"
+---
+
+Every React application starts with a task of figuring out which state
+management to be used. Most of the tutorials we see, is `React + Redux` or
+`React + <state management library>`. Initially, `Context API` was not great and
+it wasn’t “Stable”. So generally it was advised not to be used directly. A most
+common problem faced by developers then was sharing state between components.
+Redux did solve that problem. But as React progressed, `Context` became very
+stable and simple to use. And hooks made sharing state with application logic
+much simpler. But we are still solving sharing state as we did before i.e. by
+using state management libraries.
+
+Before we try to answer “Which state management library should we use?“. Let’s
+answer: What are the kinds of state we have? What library should we use? **Do we
+need a State Management Library With React?**
+
+### Kinds of state
+
+**Server ~~State~~ Cache**
+
+We would need something to handle the management of the server cache. It should
+be able to do things like `prefetching`, `pagination`, `optimistic updates` etc.
+
+Standard state management library wouldn't be able to handle these operations.
+We would need something that specializes in managing server cache.
+
+In most cases, this kind of state would be **70%** of all the Application State.
+
+**Local Application State**
+
+This is the rest of the state, we would have after server cache is taken care
+of. This would most likely be "Is the modal open", "Changes to form by user",
+and few other things that are the state that only client should handle.
+
+In most of the applications, this state would account for 30% of the Application
+State. In case, if this kind of state is quite large in your application then
+you would require a state management library.
+
+Since we know what kind of data it is, let's look for appropriate library to
+maintain server cache.
+
+### Server Cache Management
+
+It would be great to use libraries made to handle the server cache.
+[React Query](https://github.com/tannerlinsley/react-query) is one of the best
+solutions we have right now. It can do things like `prefetching`, `pagination`,
+`optimistic updates` etc.
+
+No state management would provide such functionality, as they are focused on
+solving state management, not server cache. It is better to have a dedicated
+library to handle this problem otherwise, you will complicate APIs or lot of
+boilerplate to get a simple task done.
+
+Other solutions would be to use libraries like
+[SWR](https://github.com/vercel/swr), or a custom hook that handles API
+requests.
+
+Since we have figured out how to handle server cache, let's see how we can
+manage rest of the state.
+
+### Local Application State Management
+
+Few things to consider before you choose a particular state management library
+are:
+
+- **How much of your data needs to shared across app?** Having a user's
+  information in your header isn't sharing data across the component. In this
+  case, only your header component needs to know about the user state. Or it
+  could be some authorization information. If the authorization info just needs
+  to be in the router component then it need not be shared across the
+  application.
+
+  If there aren't a lot of data that needs to be shared and they don't get
+  updated that often, we are good with
+  [Context API](https://reactjs.org/docs/context.html). Almost **70-80%** of the
+  application would fall into this category.
+
+  Kent talks more about how to achieve most out of your application using just
+  context in his blog
+  [Application State Management with React](https://kentcdodds.com/blog/application-state-management-with-react/).
+
+- **How often does the shared data is updated?** We would have to figure out how
+  many times does the state gets updated. User's information would only be
+  changed when the profile gets updated or when a user logs in/out. So that
+  would be infrequent.
+
+  If you have a lot of global states (try to avoid), you might need some better
+  way to share data across the application. Context API would be able to do
+  this, but at some scale, you need to do some kind of performance optimization.
+  Libraries like [zustand](https://github.com/pmndrs/zustand) do this well.
+
+- **How many components should know when data is updated?** When a shared state
+  gets updated, does your entire app needs to know that it updated or just a few
+  components?
+
+If a state needs to be shared only across a page, then share it across the page,
+not the whole app. Co-locate the state. The state should be at the lowest tree
+node where it is required. We can always pull up the state when required.
+Context API would work for us.
+
+If your shared state can be sliced i.e. shared data is made up of smaller
+slices, and update happens to a slice of data and a few corresponding components
+need to be updated. That would mean you have a lot of state updates and only
+part of the application needs to be updated. Then look into
+[jotai](https://github.com/pmndrs/jotai) or [recoil](https://recoiljs.org/).
+These libraries are for a very specific use case. Let me repeat it, most
+applications won't need this.
+
+- **Does your application has complex flow control?** All applications will have
+  some kind of flow control, but do you have a complex one? Can it not be
+  handled by reducers?
+
+  This would mean you might need some kind of State Machines to handle the
+  transition between states of the application. Would prevent the application
+  from being in an impossible state. For eg. Authenticated user in a
+  registration form. There should be more cases than this to introduce a state
+  machine in your application. [Xstate](https://xstate.js.org/) is a popular
+  choice for state machine in frontend applications.
+
+### Conclusion
+
+In most of the application, we don't need any state management library. You
+would be much better of with React's State and Context API.
+
+When you work on your application, you should ask "Do I need a state management
+library?" instead of "Which state management library should I use?"
