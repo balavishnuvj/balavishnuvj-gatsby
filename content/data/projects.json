@@ -1,5 +1,14 @@
 [
   {
+    "title": "Portfolio",
+    "description": "Balavishnu V J's personal website.",
+    "link": "https://github.com/balavishnuvj/balavishnuvj-gatsby",
+    "tags": ["react", "gatsby"],
+    "subHeading": "",
+    "kind": "open",
+    "kindText": ""
+  },
+  {
     "title": "RTL Simple Queries",
     "description": "RTL Simple Queries is a companion library for React Testing Library that provides an alternative query API.",
     "link": "https://github.com/balavishnuvj/rtl-simple-queries",
