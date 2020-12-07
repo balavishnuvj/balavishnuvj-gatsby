@@ -52,7 +52,7 @@ solutions we have right now. It can do things like `prefetching`, `pagination`,
 
 No state management would provide such functionality, as they are focused on
 solving state management, not server cache. It is better to have a dedicated
-library to handle this problem otherwise, you will complicate APIs or lot of
+library to handle this problem, otherwise you will complicate APIs or lot of
 boilerplate to get a simple task done.
 
 Other solutions would be to use libraries like
@@ -83,10 +83,10 @@ are:
   context in his blog
   [Application State Management with React](https://kentcdodds.com/blog/application-state-management-with-react/).
 
-- **How often does the shared data is updated?** We would have to figure out how
-  many times does the state gets updated. User's information would only be
-  changed when the profile gets updated or when a user logs in/out. So that
-  would be infrequent.
+- **How often is the shared data updated?** We would have to figure out how many
+  times does the state gets updated. User's information would only be changed
+  when the profile gets updated or when a user logs in/out. So that would be
+  infrequent.
 
   If you have a lot of global states (try to avoid), you might need some better
   way to share data across the application. Context API would be able to do
@@ -124,7 +124,7 @@ applications won't need this.
 ### Conclusion
 
 In most of the application, we don't need any state management library. You
-would be much better of with React's State and Context API.
+would be much better off with React's State and Context API.
 
 When you work on your application, you should ask "Do I need a state management
 library?" instead of "Which state management library should I use?"
