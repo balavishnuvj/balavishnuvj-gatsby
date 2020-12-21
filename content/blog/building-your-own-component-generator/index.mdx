@@ -1,40 +1,46 @@
 ---
 title: "Building your own component generator"
 date: "2020-12-20T18:30:00.000Z"
-description: "Lets build a component generator"
+description:
+  "Lets build CLI tool that can generate components based on custom templates."
 ---
 
-Building custom dev tools is very rewarding. Let's build a custom component
-generator.
+I love to automate any repetitive task 😍. That is what excites me in
+programming. Sometimes I would spend more time in creating the automation than I
+would use it for. For any large project, I would come up with a template of how
+the components should look like. Then I would create a tool to generate those
+templates. It would give consistency across the team and save some time.
 
-The CLI tool, we would be creating should be able to create component. We should
-be able to customize the generated component with some options.
+Today will show you how to build one such tool.
 
-Let's list down the features we would like in this CLI tool.
+![Component generator in action](./images/component-generator.gif)
 
-### Features
+This CLI dev tool, we should be able to create a component. We should be able to
+customize the generated component with some options.
 
-- Add options to name the component.
-- Option to additional file like utility, test files.
-- Option to choose the location where the component would be created.
-- Ability to create the component from anywhere.
+Let’s list down the features we would like in this CLI tool.
 
-Okay let's start by creating a component. For templating we will be using
+### What we want?
+
+- Add options to name the component
+- Option add files like utility, test files
+- Option to choose the location where the component would be created
+- Ability to create the component from anywhere
+
+Let’s start by creating a component. For templating, we will be using
 [handlebars](https://handlebarsjs.com) and for CLI commands we will be using
 [Plop](https://github.com/plopjs/plop).
 
 To start with you can add this in any existing project or you can create a new
-one by `npm init`.
+one by npm init. Create a folder called src and create a file named index.js in
+it. Also, create a folder named templates in src.
 
-Let's create a folder called `src` and create a file named `index.js` in it.
-Also create a folder named `templates` in `src`.
-
-We would need `plop` as a dev dependency, `npm install plop -D`.
+Add plop as a dev dependency, npm install plop -D.
 
 To run the component generator, we will add a npm script to in `package.json`.
 `"create-component": "plop --plopfile src/index.js"`.
 
-Okay, if you are looking for bunch of commands.
+Let’s us go through a bunch of commands for the same
 
 ```bash
 npm init -y # if you don't have a project.
@@ -51,7 +57,7 @@ and in `package.json`:
   },
 ```
 
-While we are at it, let's create a template file `templates/component.hbs. And
+While we are at it, let's create a template file `templates/component.hbs`. And
 the content can be
 
 ```
@@ -114,8 +120,8 @@ create file.
 
 So lets run this, `npm run create-component`.
 
-If everything goes well, it should have asked you `What should it be called?`
-and if you provide the name of the component, it create a folder named after the
+If everything goes well, it should have asked you `What should it be called?` If
+you provide the name of the component, it create a folder named after the
 component and file inside that. Yay 🥳!!!
 
 Let's add some more features, like creating an utility file.
@@ -168,7 +174,7 @@ module.exports = plop => {
 Before we run the CLI again by `npm run create-component`, we have to create the
 template `template/component.utilities.hbs`. I have kept the file empty for now.
 Similarly we can prompt if we need test files and add options for that as well.
-You may want add more options based on the project you are working on.
+You may want add more options based on the project.
 
 If you have noticed the component is always created at `src`, we might want to
 create component any directory.
@@ -218,10 +224,11 @@ creating the component. Isn't that awesome? 🕺
 
 We have to select the directory where we want the component to be generated
 every time. It would be awesome if we can run this command from any location in
-the filesystem. Something like `gen MyAwesomeButton`.
+the filesystem like `gen MyAwesomeButton`.
 
-**Let's do that!** First we would have to create an executable script in
-`bin/index.js`.
+**Let's do that!**
+
+First we would have to create an executable script in `bin/index.js`.
 
 ```js
 #!/usr/bin/env node
@@ -259,9 +266,9 @@ And in `package.json` let add this
   },
 ```
 
-to make this available everywhere in yout system run `npm link .`
+To make this available everywhere in yout system run `npm link .`
 
-Voilà!!!
+Voilà!!! 🥳🎊
 
 I have created everything we did in a repo,
-[component-generator](https://github.com/balavishnuvj/component-generator)
+[component-generator](https://github.com/balavishnuvj/component-generator).
