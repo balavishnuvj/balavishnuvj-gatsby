@@ -1,0 +1,135 @@
+---
+title: "Build your own URL shortener under 10 minutes"
+date: "2021-01-08T18:30:00.000Z"
+description: "Custom Domain. Easy to build. Almost FREE!!!"
+---
+
+Shortened URLs are easier to remember, which enables you to share them with
+anyone without having to look at your notes or your bookmarks.
+
+They generally solve two main problems. One, you will not have to remember long
+URLs when you want to share. Other is to reduce the length of your URLs while
+sending marketing messages.
+
+Suppose I want to share my Twitter profile,
+[bala.at/twitter](https://bala.at/twitter) would go to
+[https://twitter.com/vjbalavishnu](https://twitter.com/vjbalavishnu). Let's say
+in the future if I decided not to use Twitter I can redirect `bala.at/twitter`
+to `https://balavishnuvj.com/blog/why-i-left-twitter`, explaining why I stopped
+using Twitter.
+
+It would also help in reducing the length of the URLs, where every character in
+the message is charged.
+
+Also, the links would look much cleaner. e.g., `bala.at/p/1234` than
+`https://example.com/profile/1234`. Having your custom domain would improve
+credibility when you share URLs
+
+I was inspired by [Kent's](https://kentcdodds.com/)
+[video](https://www.youtube.com/watch?v=HL6paXyx6hM) on creating shortener using
+Netlify.
+
+Let's see how we can build custom URL shortener. You would need
+
+1. GitHub Account
+2. Netlify Account
+3. Custom Domain (optional)
+
+Netlify provides a simple way to define your redirects, called Netlify
+redirects.
+
+All you would need to get started is a repo with a file called `_redirects`.
+This file would have the map between your short URL and actual URL.
+
+We can start by creating a new repo in your GitHub account. I have named it
+`netlify-redirects`. Lets create a file `_redirects` with some config.
+
+```
+/github     https://github.com/balavishnuvj
+/twitter    https://twitter.com/vjbalavishnu
+/linkedin   https://www.linkedin.com/in/balavishnuvj
+
+/*          https://balavishnuvj.com/
+```
+
+The left-hand side would be a short link and the right-hand side would be the
+full link.
+
+Let’s deploy this repo in netlify. You can do that by going to
+[Netlify](https://app.netlify.com). In the site section, add new site by
+clicking `New site from Git`. If you haven't authorized netlify before, give
+netlify the permission to access your repo. As soon as access is granted, your
+work is nearly done.
+
+Once deployed (will not take more than a few seconds ⚡️), you can go back to
+[Netlify](https://app.netlify.com). Under the site section, you would find a
+site with `<random-text>.netlify.app`.
+
+Your "shortener" is working, can test it by going to `<random-text>.netlify.app`
+or `<random-text>.netlify.app/github` or any other custom links you provided.
+
+Now this isn't as short as we wanted, Netlify allows us to edit the subdomain
+name, so you can do that by going to
+`Domain Settings -> Options(under <radom-text>) -> Edit Site Name`. I had
+changed mine from `<random-text>.netlify.app` to
+`netlify-redirects.netlify.app`. You will not be able to use the same, but you
+can pick something that makes sense to you. Maybe `qwe.netlify.app`, something
+like that.
+
+Now we have even shorter domain `qwe.netlify.app` and `qwe.netlify.app/github`
+takes us to desired page.
+
+To make the domain name even shorter, we will have to buy a custom domain. I got
+mine [bala.at](https://bala.at) from [iwantmyname](https://iwantmyname.com), you
+can get it from netlify or anywhere you can find the domain name you are
+looking.
+
+Once you have bought the domain, you have to change the domain name server to
+what netlify would provide in `Domain Settings -> Add custom domain`.
+
+You would have to copy the name servers from **Netlify** to the domain name
+provider.
+
+**NOTE: It might take few hours for the name servers to get updated**
+
+So you might want to wait for a couple of hours if your custom domain doesn't
+work.
+
+To make things easier to add new URLs to your repo, Kent has created a package
+[netlify-shortener](https://github.com/kentcdodds/netlify-shortener). It has
+util to add shortener from your terminal.
+
+```bash
+npm run shorten # simply formats your _redirects file
+npm run shorten https://yahoo.com # generates a short code and adds it for you
+npm run shorten https://github.com gh # adds gh as a short URL for you
+```
+
+_From the original
+[documentation](https://github.com/kentcdodds/netlify-shortener#usage) of
+netlify-shortener._
+
+There are few shortcomings with this approach of building a custom URL
+shortener. If you want the same URL for all the users you are good to go. e.g.,
+[bala.at/twitter](https://bala.at/twitter) should go to
+[https://twitter.com/vjbalavishnu](https://twitter.com/vjbalavishnu). But what
+if you require a unique one for each user? e.g., You want users’ to be able to
+share their profile. Let's see the actual URL would look like
+`https://example.com/profile/<user-id>`. We will not be able to generate unique
+URLs for each user. But we can forward URL params to the actual URL. We use
+[splats](https://docs.netlify.com/routing/redirects/redirect-options/#splats) or
+[placeholders](https://docs.netlify.com/routing/redirects/redirect-options/#placeholders)
+from netlify.
+
+```
+/p/*      https://example.com/profile/:splat
+```
+
+We have prefixed all URLs that have to go to `profile` to `p`. So now
+`bala.at/p/1234` should take to `https://example.com/profile/1234`.
+
+Analytics is one of USP for most of the URL shorteners, we won’t be able to do
+that here, but you can add analytics to your webserver that should handle most
+of your use cases.
+
+Yup, that's all. We have our custom domain URL shortener. 🕺
