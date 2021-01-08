@@ -14,6 +14,7 @@ module.exports = {
       github: "https://github.com/balavishnuvj",
       linkedin: "https://www.linkedin.com/in/balavishnuvj",
       twitter: "https://twitter.com/vjbalavishnu",
+      twitterFollow: "https://twitter.com/intent/follow?screen_name=vjbalavishnu",
       twitterId: "vjbalavishnu",
     },
     projects,

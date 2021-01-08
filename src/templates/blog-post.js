@@ -73,6 +73,38 @@ const BlogTime = styled.p`
   margin-right: 4px;
 `
 
+const BottomAction = styled.div`
+  display: flex;
+  margin-bottom: 40px;
+  justify-content: flex-end;
+  align-items: center;
+`
+
+const TweeterShareButton = styled.button`
+  border: none;
+  background-color: transparent;
+  color: ${props => props.theme.textColor};
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 14px;
+  text-transform: uppercase;
+  margin-left: 8px;
+  padding: 0;
+`
+
+const GithubEditLink = styled.a`
+  background-color: transparent;
+  color: ${props => props.theme.textColor};
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 14px;
+  text-transform: uppercase;
+  box-shadow: none;
+  margin-right: 8px;
+`
+
+
+
 const BlogPostTemplate = ({ data, pageContext, location }) => {
   if (!data.mdx) {
     return null
@@ -80,6 +112,14 @@ const BlogPostTemplate = ({ data, pageContext, location }) => {
   const post = data.mdx
   const { siteMetadata } = data.site
   const { previous, next } = pageContext
+  function handleTwitterShareLink() {
+    const twitterShareLink = `https://twitter.com/share?url=${window.encodeURIComponent(
+      window.location.href
+    )}&text=${window.encodeURIComponent(post.frontmatter.title)}&via=${
+      siteMetadata.social.twitterId
+    }`
+    window.open(twitterShareLink)
+  }
   return (
     <React.Fragment>
       <SEO
@@ -121,9 +161,19 @@ const BlogPostTemplate = ({ data, pageContext, location }) => {
             </BlogSection>
             <hr
               style={{
-                marginBottom: rhythm(1),
+                marginBottom: rhythm(0.5),
+                marginTop: rhythm(1.5),
               }}
             />
+            <BottomAction>
+              <GithubEditLink href={post.fields.editLink} target="_blank" rel='noreferrer'>
+                Edit on Github
+              </GithubEditLink>{' '}
+              •
+              <TweeterShareButton onClick={handleTwitterShareLink}>
+                Share on Twitter
+              </TweeterShareButton>
+            </BottomAction>
             <footer>
               <Bio />
             </footer>
@@ -168,11 +218,13 @@ export const pageQuery = graphql`
     site {
       siteMetadata {
         title
+        siteUrl
         author {
           name
         }
         social {
           email
+          twitterId
         }
       }
     }
@@ -181,6 +233,9 @@ export const pageQuery = graphql`
       excerpt(pruneLength: 160)
       body
       timeToRead
+      fields {
+        editLink
+      }
       frontmatter {
         title
         date(formatString: "MMMM DD, YYYY")

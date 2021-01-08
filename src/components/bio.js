@@ -11,6 +11,12 @@ import Image from "gatsby-image"
 
 import { rhythm } from "../utils/typography"
 
+import styled from "styled-components"
+
+const P = styled.p`
+  margin: 0;
+`
+
 const Bio = () => {
   const data = useStaticQuery(graphql`
     query BioQuery {
@@ -28,7 +34,7 @@ const Bio = () => {
             summary
           }
           social {
-            twitter
+            twitterFollow
           }
         }
       }
@@ -41,6 +47,7 @@ const Bio = () => {
       style={{
         display: `flex`,
         marginBottom: rhythm(2.5),
+        alignItems: 'center'
       }}
     >
       <Image
@@ -56,12 +63,12 @@ const Bio = () => {
           borderRadius: `50%`,
         }}
       />
-      <p>
+      <P>
         Written by <strong>{author.name}</strong>.{` `}
-        Follow him on <a href={social.twitter}>Twitter </a>
+        Follow him on <a href={social.twitterFollow}>Twitter </a>
         to know what he is working on. Also, his opinions, thoughts and
         solutions in Web Dev.
-      </p>
+      </P>
     </div>
   )
 }

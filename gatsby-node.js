@@ -60,5 +60,13 @@ exports.onCreateNode = ({ node, actions, getNode }) => {
       node,
       value,
     })
+    createNodeField({
+      name: "editLink",
+      node,
+      value: `https://github.com/balavishnuvj/balavishnuvj-gatsby/edit/master${node.fileAbsolutePath.replace(
+        __dirname,
+        ""
+      )}`,
+    })
   }
 }
