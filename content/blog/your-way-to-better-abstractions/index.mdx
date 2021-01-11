@@ -1,0 +1,396 @@
+---
+title: "Your way to better abstractions"
+date: "2021-01-11T18:30:00.000Z"
+description:
+  "When done right, abstractions are powerful. Though they are difficult, tricky
+  and need maintenance they help to reuse the same code"
+---
+
+When done right, abstractions are powerful. Though they are difficult, tricky
+and need maintenance they help to reuse the same code in different places.
+Fixing a bug in one place would mean fixing in all other places where they are
+used. But when they go wrong (as they often do), they don't age well. They
+resist change and become very difficult to manage.
+
+How does this happen? It happens due to principles like DRY and Write Everything
+Twice which inherently focus on duplication or redundancy in code. I am not
+saying that these principles are bad by design, but that following them
+religiously could lead to bad abstractions. Abstractions are difficult and a
+good abstraction will change over time.
+
+> "Duplication is far cheaper than the wrong abstraction"
+
+_said [Sandi Metz](https://twitter.com/sandimetz) in
+[The Wrong Abstraction](https://www.sandimetz.com/blog/2016/1/20/the-wrong-abstraction)
+and personally, I agree with her._
+
+Initially an abstraction is added to handle a particular use case. Over time
+when more and more similar use cases are added, it would look like a good
+abstraction in the beginning, and later end up being very different from what
+you had intended, as it had to handle too many use cases. An example for this is
+Chinese whispers.
+
+### A Clear Concept: An Example
+
+Let me try to explain this with an example. Consider having a streaming
+application with Free and Premium content. Paid customers get Premium + Free
+content and free users get only Free content.
+
+You start by checking if the user is premium or not and return the content on
+this basis.
+
+```js
+// content.js
+function getContent(user) {
+  const isPremium = user.premiumEndDate >= today
+  return isPremium ? freeContent.concat(premiumContent) : freeContent
+}
+```
+
+This seems fine, nothing fancy.
+
+Later, you decided to add advertisements to your product. If the user is not a
+premium member they are shown some ads.
+
+```js
+// home-banner.js
+function getSellingScreen(user) {
+  const isPremium = user.premiumEndDate >= today
+  return isPremium ? null : sellingScreen
+}
+```
+
+As soon as you give this for review, your colleague says “Hey, I have seen
+isPremium check before. Can you abstract that out?"
+
+So you create a new abstraction in your shared folder with user-membership.js
+and introduce a method to check membership.
+
+```js {2-4,8,14}
+// user-membership.js
+function isPremiumUser(user) {
+  return user.premiumEndDate >= today
+}
+
+// content.js
+function getContent(user) {
+  const isPremium = isPremiumUser(user)
+  return isPremium ? freeContent.concat(premiumContent) : freeContent
+}
+
+// home-banner.js
+function getSellingAds() {
+  const isPremium = isPremiumUser(user)
+  return isPremium ? null : sellingScreen
+}
+```
+
+Later, the feature for a user to pause their premium membership is also
+introduced.
+
+This means, these users shouldn’t see **Premium Content** They also shouldn’t
+see the selling ads.
+
+```js
+// content.js
+function getContent(user) {
+  const isPremium = user.premiumEndDate >= today
+  return isPremium ? freeContent.concat(premiumContent) : freeContent
+}
+```
+
+Since your i`sPremiumUser` doesn't consider the state of the membership, you
+introduce a check `onlyActive`. So you wouldn't break other places where this
+abstraction is used and hence would default to `false`. So you decide to add
+this condition in the abstraction itself. Thus you introduce a new field:
+`membershipStatus` in your `User` entity.
+
+You update both `getContent` and `getSellingAds`. You also rename the variable
+to `isActivePremium` to have better understanding.
+
+```js {2-8,12}
+// user-membership.js
+function isPremiumUser(user, { onlyActive = false } = {}) {
+  const isPremium = user.premiumEndDate >= today
+  if (!onlyActive) {
+    return isPremium
+  }
+  return isPremium && user.membershipStatus === "active"
+}
+
+// content.js
+function getContent(user) {
+  const isActivePremium = isPremiumUser(user, { onlyActive: true })
+  return isActivePremium ? freeContent.concat(premiumContent) : freeContent
+}
+
+//  home-banner.js
+function getSellingAds() {
+  const isPremium = isPremiumUser(user)
+  return isPremium ? null : sellingScreen
+}
+```
+
+This looks good. Not too shabby for a Friday night push.
+
+After a few weeks, you realise that premium users often forget to resume their
+membership. So you decide to show a reminder in the banner space, where we used
+to show ads, when a premium user is watching it.
+
+Thus you update your `getSellingAds` method to handle the new cases. Let's also
+update the name of the method to `getBannerContent`
+
+```js {19,23-25}
+// user-membership.js
+function isPremiumUser(user, { onlyActive = false } = {}) {
+  const isPremium = user.premiumEndDate >= today
+  if (!onlyActive) {
+    return isPremium
+  }
+  return isPremium && user.membershipStatus === "active"
+}
+
+// content.js
+function getContent(user) {
+  const isActivePremium = isPremiumUser(user, { onlyActive: true })
+  return isActivePremium ? freeContent.concat(premiumContent) : freeContent
+}
+
+//  home-banner.js
+function getBannerContent() {
+  const isPremium = isPremiumUser(user)
+  const isPremiumActive = isPremiumUser(user, { onlyActive: true })
+  if (!isPremium) {
+    return sellingScreen
+  }
+  if (!isPremiumActive) {
+    return ResumeReminder
+  }
+  return null
+}
+```
+
+Great work! You have successfully reused your abstraction. Now you give it for
+review. But the Reviewer isn’t very happy. The meanings of the checks seem to be
+very vague. For example,what is the difference between `isPremium` and
+`isPremiumActive`? You convince your reviewer with well thought out comments.
+Since your `getSellingAds` is not only showing ads but also reminder, you
+renamed the function to `getBannerContent`.
+
+A few weeks later, your premium content is given for a free trial. This means,
+Users who are not premium members have to see the premium content. At the same
+time,they should also see the ads. You decide to handle this use case in your
+`isPremiumUser` by introducing another check `includeFreeTrial`, which again
+defaults to `false`.
+
+Now the code looks like this:
+
+```js {4,7,11-14,18}
+// user-membership.js
+function isPremiumUser(
+  user,
+  { onlyActive = false, includeFreeTrial = false } = {}
+) {
+  const isPremium = user.planType === "premium"
+  if (!onlyActive || !includeFreeTrial) {
+    return isPremium
+  }
+  const isActivePremium = isPremium && user.isMembershipStatus === "active"
+  const isUserFreeTrial = user.planType === "freeTrail"
+  if (onlyActive && includeFreeTrial) {
+    return isUserFreeTrial || isActivePremium
+  }
+  if (onlyActive) {
+    return isActivePremium
+  }
+  return user.isUserFreeTrial
+}
+
+// content.js
+function getContent(user) {
+  const isActivePremium = isPremiumUser(user, {
+    onlyActive: true,
+    includeFreeTrial: true,
+  })
+  return isActivePremium ? freeContent.concat(premiumContent) : freeContent
+}
+
+// home-banner.js
+function getBannerContent() {
+  const isPremium = isPremiumUser(user)
+  const isPremiumActive = isPremiumUser(user, { onlyActive: true })
+  if (!isPremium) {
+    return sellingScreen
+  }
+  if (!isPremiumActive) {
+    return ResumeReminder
+  }
+  return null
+}
+```
+
+At this point, `isPremiumUser` is handling too many cases. In the beginning we
+thought only premium users could watch premium content. But that is not the case
+anymore. So now you have too many boolean checks in the "abstraction" and you
+are handling some unused cases like, `onlyActive = false` and
+`includeFreeTrial = false`.
+
+Not happy about this? No choice but to push it ahead as it is an urgent
+requirement.
+
+This is the first step where you should understand that your abstraction is
+doing far more than it was intended to do. This happened because our initial
+assumption that only premium users can watch premium content was wrong. And this
+happens often and the right thing to do at this point is to take back a step. Re
+consider: what exactly is your abstraction doing now? Do you still need this
+abstraction? Your abstractions need to change with your business requirements.
+
+So now you try to inline your abstractions, copy and paste the abstraction where
+it is used. You can only do this if you have integration tests. If you don’t
+have enough integration tests add them before inlining the abstractions.Unit
+tests won’t help you here as you had mocked these abstractions.
+
+```diff
+// content.js
+function getContent(user) {
++  const isFreeTrial = user.planType === "freeTrail"
+-  const isActivePremium = isPremiumUser(user, {
+-    onlyActive: true,
+-    includeFreeTrial: true,
+-  })
++  const isActivePremium =
++    user.planType === "premium" && user.membershipStatus === "active"
+-  return isActivePremium
++  return isFreeTrial || isActivePremium
+    ? freeContent.concat(premiumContent)
+    : freeContent
+}
+
+// home-banner.js
+function getBannerContent() {
+-  const isPremium = isPremiumUser(user)
+-  const isPremiumActive = isPremiumUser(user, { onlyActive: true })
+-  if (!isPremium) {
++  if (user.planType !== "premium") {
+    return sellingScreen
+  }
+- if (!isPremiumActive) {
++  if (user.membershipStatus !== "active") {
+    return resumeReminder
+  }
+  return null
+}
+```
+
+Now the code looks much cleaner despite no abstraction being used. Hold on! But
+you still need abstractions! You can’t copy the same code over and over without
+abstracting. Now it is clear that we have introduced planType and
+membershipStatus which weren't there when we started, at which point we couldn't
+have predicted this.
+
+```js
+// user-membership.js
+function getUserPlanType(user) {
+  return user.planType;
+}
+
+// content.js
+function getContent(user) {
+  const userPlanType = getUserPlanType(user);
+  const isFreeTrial = userPlanType === 'freeTrail';
+  const isPremium = userPlanType === ‘premium’;
+  const isActivePremium = isPremium && user.membershipStatus === 'active';
+  return isFreeTrial || isActivePremium
+    ? freeContent.concat(premiumContent)
+    : freeContent;
+}
+
+// home-banner.js
+function getBannerContent() {
+  const userPlanType = getUserPlanType(user);
+  if (userPlanType !== 'premium') {
+    return sellingScreen;
+  }
+  if (user.membershipStatus !== 'active') {
+    return resumeReminder;
+  }
+  return null;
+}
+```
+
+This is your new abstraction and here you have a simpler way of getting the plan
+type: `getUserPlanType`. You could add another abstraction to membership status,
+but you have already seen that it is not used much and decide to add it later.
+This is perfectly okay: to have a duplicate code until you figure out a better
+abstraction. A few weeks later, you might come across a new use case which could
+give you a better idea on what to abstract and what not to.
+
+Some might say that the abstraction is being used in too many places and that we
+can’t just inline every usage. Again, this is okay and you can deprecate the use
+of the old abstraction. You can then migrate on a case to case basis whenever
+you are working on the module. After enough tries, you have come up with better
+abstractions. You realised the abstraction you were looking for was
+`isEligibleForPremiumContent` and not `isPremiumUser`.
+
+```js
+// user-membership.js
+function isPremium(user) {
+    return getUserPlanType(user) === ‘premium’;
+}
+
+function isFreeTrial(user) {
+    return getUserPlanType(user) === ‘freeTrial’;
+}
+
+function isActivePremium(user) {
+    return isPremium(user) && user.membershipStatus === 'active'
+}
+
+function isEligibleForPremiumContent(user) {
+    return isFreeTrial(user) || isActivePremium(user);
+}
+
+function isPausedPremium(user) {
+    return isPremium(user) && user.membershipStatus === ‘paused’;
+}
+
+// content.js
+function getContent(user) {
+  return isEligibleforPremiumContent(user)
+    ? freeContent.concat(premiumContent)
+    : freeContent;
+}
+
+
+// home-banner.js
+function getSellingAds() {
+  if (!isPremium(user)) {
+    return sellingScreen;
+  }
+  if (isPausedPremium(user)) {
+    return resumeReminder;
+  }
+  return null;
+}
+```
+
+These are the few possible abstractions you could come up with after a few more
+iterations. And when compared with the old abstraction, this looks much better.
+
+#### Always remember:
+
+- Similar looking code shouldn’t be the only criterion for abstraction, include
+  your business requirement too.
+- You will eventually end up in bad abstraction if you don’t pause to re-think
+  the abstraction with changes in business requirements.
+- It is okay to have duplicate code in a few places.
+- Your integration tests need to be closer to your business logic rather than
+  your abstractions.
+- Keep your abstractions lean.
+
+There is no hard and fast rule for good abstraction. It is okay to duplicate the
+code until a good abstraction is found and does not mean that the same code will
+be duplicated all over the codebase. Nobody wants to fix the same bug at 10
+different places.
+
+**Duplicate until you find your abstraction.**
