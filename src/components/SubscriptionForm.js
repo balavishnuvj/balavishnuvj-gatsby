@@ -2,6 +2,8 @@ import React from "react"
 import styled from "styled-components"
 import { rhythm } from "../utils/typography"
 import NewsletterGraphic from "../../content/assets/svg/newsletter-light.svg"
+import NewsletterSuccess from "../../content/assets/svg/newsletter-success.svg"
+import Sparkles from "./Sparkles"
 
 const Form = styled.form`
   display: flex;
@@ -9,7 +11,7 @@ const Form = styled.form`
   width: 100%;
   align-items: flex-end;
   justify-content: space-between;
-  max-width: 40rem;
+  max-width: 42rem;
   @media (max-width: 699px) {
     flex-direction: column;
     align-items: flex-start;
@@ -17,7 +19,13 @@ const Form = styled.form`
 `
 
 const Field = styled.input`
+  padding: 2px 8px;
+  background-color: ${props => props.theme.primaryColor};
+  border: none;
+  color: ${props => props.theme.whiteColor};
+  border-bottom: 1px solid ${props => props.theme.whiteColor};
   @media (max-width: 699px) {
+    width: 100%;
     margin-bottom: 16px;
   }
 `
@@ -35,8 +43,8 @@ const FullWidthContainer = styled.div`
 const Container = styled.div`
   margin: 0 auto;
   flex: 1;
-  max-width: ${props => props.$maxWidth || "1200px"};
-  padding: ${rhythm(1)};
+  max-width: 1200px;
+  padding: ${rhythm(1.5)} ${rhythm(1)};
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -52,6 +60,7 @@ export const H3 = styled.h3`
 
 const Description = styled.p`
   color: ${props => props.theme.ctaText};
+  max-width: 80ch;
 `
 
 const Label = styled.label`
@@ -64,7 +73,7 @@ const Label = styled.label`
 const Hint = styled.p`
   font-size: 12px;
   margin: 0;
-  margin-top: 28px;
+  margin-top: 32px;
   color: ${props => props.theme.ctaText};
 `
 
@@ -73,14 +82,35 @@ const SubscribeButton = styled.button`
   background-color: ${props => props.theme.whiteColor};
   color: ${props => props.theme.mobileMenuBackground};
   border: none;
-  padding: 8px 36px;
+  padding: 8px 40px;
+  font-weight: bold;
+  @media (max-width: 699px) {
+    width: 100%;
+    margin-top: 20px;
+  }
 `
 
 const NewLetterImg = styled(NewsletterGraphic)`
-  min-width: 180px;
+  min-height: 180px;
+  max-width: 250px;
   margin-left: ${rhythm(1)};
   @media (max-width: 699px) {
     display: none;
+  }
+`
+
+const NewLetterSuccess = styled(NewsletterSuccess)`
+  min-height: 180px;
+  max-width: 250px;
+  margin-left: ${rhythm(1)};
+  @media (max-width: 699px) {
+    display: none;
+  }
+`
+
+const FormGroup = styled.div`
+  @media (max-width: 699px) {
+    width: 100%;
   }
 `
 
@@ -130,7 +160,7 @@ function useFetch({ url, body }) {
   return state
 }
 
-function SubscriptionForm({ maxWidth, rightSection }) {
+function SubscriptionForm() {
   const [values, setValues] = React.useState()
   const { pending, response, error } = useFetch({
     url: `https://app.convertkit.com/forms/1953777/subscriptions`,
@@ -151,10 +181,10 @@ function SubscriptionForm({ maxWidth, rightSection }) {
 
   return (
     <FullWidthContainer>
-      <Container $maxWidth={maxWidth}>
+      <Container>
         {response && !pending ? (
           <div>
-            <H3>Great, one last thing...</H3>
+            <H3>Great, one last thing</H3>
             <Description>
               I just sent you an email with the confirmation link.{" "}
               <strong>Please check your inbox!</strong>
@@ -166,11 +196,11 @@ function SubscriptionForm({ maxWidth, rightSection }) {
             <Description>
               Subscribe to my newsletter to receive letters about some
               interesting patterns and views in programming, frontend,
-              Javascript, React, testing and many more. Also, you would be the
-              first to know when I publish a blog.
+              Javascript, React, testing and many more. Be the first one to know
+              when I publish a blog.
             </Description>
             <Form onSubmit={handleSubmit}>
-              <div>
+              <FormGroup>
                 <Label htmlFor="first_name">
                   <div>First Name</div>
                 </Label>
@@ -181,8 +211,8 @@ function SubscriptionForm({ maxWidth, rightSection }) {
                   placeholder="John"
                   type="text"
                 />
-              </div>
-              <div>
+              </FormGroup>
+              <FormGroup>
                 <Label htmlFor="email">
                   <div>Email</div>
                 </Label>
@@ -193,7 +223,7 @@ function SubscriptionForm({ maxWidth, rightSection }) {
                   placeholder="john@doe.com"
                   type="email"
                 />
-              </div>
+              </FormGroup>
               <SubscribeButton data-element="submit" type="submit">
                 {!pending && "Subscribe"}
                 {pending && "Submitting..."}
@@ -203,7 +233,13 @@ function SubscriptionForm({ maxWidth, rightSection }) {
             <Hint>No spam, just some good stuff! Unsubscribe at any time</Hint>
           </div>
         )}
-        <NewLetterImg />
+        {response && !pending ? (
+          <Sparkles>
+            <NewLetterSuccess />
+          </Sparkles>
+        ) : (
+          <NewLetterImg />
+        )}
       </Container>
     </FullWidthContainer>
   )

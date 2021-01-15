@@ -181,7 +181,7 @@ const BlogPostTemplate = ({ data, pageContext, location }) => {
                 Share on Twitter
               </TweeterShareButton>
             </BottomAction>
-            <SubscriptionForm maxWidth="56rem" />
+            <SubscriptionForm />
             <Footer>
               <Bio />
             </Footer>

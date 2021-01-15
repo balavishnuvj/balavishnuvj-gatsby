@@ -58,13 +58,6 @@ export default function Projects({ ...props }) {
             on <a href={twitter}>Twitter</a>.
           </p>
           <p>
-            Whenever I publish any blog, you would be first to know{" "}
-            <span aria-label="party" role="img">
-              🥳
-            </span>
-            .
-          </p>
-          <p>
             But, not everything can be expressed on Twitter, it is difficult to
             convey nuances of opinions on Twitter.
           </p>

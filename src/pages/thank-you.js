@@ -18,6 +18,9 @@ const ProjectsGrid = styled.section`
   @media (max-width: 699px) {
     grid-template-columns: 1fr;
   }
+  @media (min-width: 700px) {
+    margin-top: 56px;
+  }
 `
 
 const Image = styled.img`
@@ -58,9 +61,9 @@ export default function Projects({ ...props }) {
   return (
     <Container>
       <SEO title="Thank you for subscribing!" />
-      <PageInfo title="Thank you for subscribing!" />
       <ProjectsGrid>
         <div>
+          <PageInfo title="Thank you for subscribing!" />
           <p>I really appreciate your kind gesture.</p>
           <p>
             You can read all the the <GatsbyLink to={"/blog"}>blogs</GatsbyLink>{" "}
