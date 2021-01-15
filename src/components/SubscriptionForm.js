@@ -93,6 +93,7 @@ const SubscribeButton = styled.button`
 const NewLetterImg = styled(NewsletterGraphic)`
   min-height: 180px;
   max-width: 250px;
+  min-width: 208px;
   margin-left: ${rhythm(1)};
   @media (max-width: 699px) {
     display: none;
