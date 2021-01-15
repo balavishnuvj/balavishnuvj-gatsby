@@ -99,7 +99,7 @@ function getContent(user) {
 }
 ```
 
-Since your i`sPremiumUser` doesn't consider the state of the membership, you
+Since your `isPremiumUser` doesn't consider the state of the membership, you
 introduce a check `onlyActive`. So you wouldn't break other places where this
 abstraction is used and hence would default to `false`. So you decide to add
 this condition in the abstraction itself. Thus you introduce a new field:

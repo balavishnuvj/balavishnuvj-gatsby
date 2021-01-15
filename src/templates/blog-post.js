@@ -8,6 +8,7 @@ import styled from "styled-components"
 import Clock from "../../content/assets/svg/clock.svg"
 import { MDXProvider } from "@mdx-js/react"
 import mdxComponents from "../components/mdxComponents"
+import SubscriptionForm from "../components/SubscriptionForm"
 export const BlogSection = styled.section`
   > blockquote {
     color: ${props => props.theme.quoteColor};
@@ -103,7 +104,9 @@ const GithubEditLink = styled.a`
   margin-right: 8px;
 `
 
-
+const Footer = styled.footer`
+  margin-top: 40px;
+`
 
 const BlogPostTemplate = ({ data, pageContext, location }) => {
   if (!data.mdx) {
@@ -166,21 +169,25 @@ const BlogPostTemplate = ({ data, pageContext, location }) => {
               }}
             />
             <BottomAction>
-              <GithubEditLink href={post.fields.editLink} target="_blank" rel='noreferrer'>
+              <GithubEditLink
+                href={post.fields.editLink}
+                target="_blank"
+                rel="noreferrer"
+              >
                 Edit on Github
-              </GithubEditLink>{' '}
+              </GithubEditLink>{" "}
               •
               <TweeterShareButton onClick={handleTwitterShareLink}>
                 Share on Twitter
               </TweeterShareButton>
             </BottomAction>
-            <footer>
+            <SubscriptionForm maxWidth="56rem" />
+            <Footer>
               <Bio />
-            </footer>
+            </Footer>
           </div>
         </article>
       </MDXProvider>
-
       <nav>
         <ul
           style={{

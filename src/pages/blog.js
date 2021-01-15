@@ -4,8 +4,9 @@ import Bio from "../components/bio"
 import SEO from "../components/seo"
 import PageInfo from "../components/PageInfo"
 import { rhythm } from "../utils/typography"
-import styled, { css } from "styled-components"
+import styled from "styled-components"
 import Clock from "../../content/assets/svg/clock.svg"
+import SubscriptionForm from "../components/SubscriptionForm"
 
 const ClockIcon = styled(Clock)`
   .fill {
@@ -131,6 +132,7 @@ const BlogIndex = ({ data, location }) => {
         }}
       />
       <Bio />
+      <SubscriptionForm />
     </BlogWrapper>
   )
 }
