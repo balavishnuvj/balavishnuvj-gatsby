@@ -102,6 +102,7 @@ const NewLetterImg = styled(NewsletterGraphic)`
 const NewLetterSuccess = styled(NewsletterSuccess)`
   min-height: 180px;
   max-width: 250px;
+  min-width: 208px;
   margin-left: ${rhythm(1)};
   @media (max-width: 699px) {
     display: none;
