@@ -92,6 +92,8 @@ function calculateLinesToHighlight(meta) {
 
 function Code({ codeString, language, metastring }) {
   const shouldHighlightLine = calculateLinesToHighlight(metastring)
+  const shouldShowLineNumbers =
+    !metastring || !metastring.includes("no-line-numbers")
   return (
     <Highlight
       {...defaultProps}
@@ -111,16 +113,18 @@ function Code({ codeString, language, metastring }) {
                   className: shouldHighlightLine(i) ? "highlight-line" : "",
                 })}
               >
-                <span
-                  css={css`
-                    display: inline-block;
-                    width: 2em;
-                    user-select: none;
-                    opacity: 0.3;
-                  `}
-                >
-                  {i + 1}
-                </span>
+                {shouldShowLineNumbers ? (
+                  <span
+                    css={css`
+                      display: inline-block;
+                      width: 2em;
+                      user-select: none;
+                      opacity: 0.3;
+                    `}
+                  >
+                    {i + 1}
+                  </span>
+                ) : null}
                 {line.map((token, key) => (
                   <span key={key} {...getTokenProps({ token, key })} />
                 ))}

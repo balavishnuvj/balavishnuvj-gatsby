@@ -1,0 +1,123 @@
+---
+title: "Where should you store auth tokens?"
+date: "2021-01-22T18:30:00.000Z"
+description:
+  "Testing lists could be bit tricky. Let's see how we can test it with React
+  Testing Library."
+---
+
+Authenticating users is one of the basic feature that we implement in almost
+every meaningful applications we build. It is the one most important part of the
+application, because of the security implications it has.
+
+It is hard to get authentication right. So the unless you are solving for
+authentication, don't build it yourself. You can pick services that provide
+authentication as a service like XYZ. If you want to host it yourself, most
+likely there would be a solution that is well maintained for the language you
+are working in. If you go with the later approach, you would have manage the
+token somehow.
+
+Baisc authentication flow works like this.
+
+```sh no-line-numbers
+​
+          +--------------------+            +-------------------+
+          |        Client      +------------+      Server       |
+          +--------------------+            +-------------------+
+
+          ➡️    1. Request with credentials like username/password or tokens(refresh)
+
+          ⬅️    2. Response with token
+
+          ➡️    3. Subsequnt requests with token
+
+          ⬅️    4. Validate the token and respond
+​
+
+```
+
+Until the token expires, we keep the user authenticated. After it expires, we
+have some mechanism to update the token based on auth provider we use. In some
+you might have provide the auth details again, some might re-new based on
+`refresh tokens`, some might almost never expire the token.
+
+Challege we face is to store the token securely and send it back to server.
+
+There are two ways to store them
+
+1. Storage (Local/Session)
+2. Cookies
+
+These two are interesting choices, both of them have their own pros and cons.
+
+With `Storage` data stored in them can be accessed from client side JavaScript.
+Which would mean, if for some reason, our `window` object is exposed, we give
+out token to make authenticated requests. But with `Storage` the token is never
+sent "automatically" by the browser.
+
+When it comes to `Cookies`, it kind of opposite of `Storage`. We would be
+talking about `httpOnly` cookies, otherwise even cookies would accessible from
+client side JavaScript and it would be sent automatically. Making it a bad
+choice. With `httpOnly` cookies and marked as `SameSite`, these cookies would be
+sent automatically by the browser, but from client side it wouldn't be
+accessible.
+
+**So why is automatically sending cookies bad?**
+
+Since, token it automatically sent by the browser, any link to the site you are
+authenticated would give out information that only you should have access to.
+
+Let's assume you have logged into `https://TrustedSiteIHaveLoggediIn.com/`. And
+you accideentally clicked a link in a mail which took you to
+`http://iwouldstealyourinfo.com/`. `http://iwouldstealyourinfo.com/` has a link
+in their page `https://TrustedSiteIHaveLoggediIn.com/my-secret-info` will give
+out all the secret from the site you logged into.
+
+There are precautions, that are taken to avoid such issues like Same Origin
+Policy (CORS). Recent releases of modern browsers also include `SameSite`in
+cookies which prevents from browser automatically sending the cookie if it was
+not issued to same domain.
+
+Other problem is if you `GET` request is state changing. What it means is, if
+you get a mail with link to legit site
+`https://TrustedSiteIHaveLoggediIn.com/transfer-all-money?to=GREEDY_GUY&amount=9999999`.
+This link is a bad design, though "attacker" might not have access to your
+information but they will able take actions through URLs. So to prevent such
+issues, Don't design any APIs which take an action through get requests.
+
+For state changing requests like POST, just clicking browser makes `GET`
+request, so that gets prevented. Also CSRF acts as additional security. As you
+send additional token to make requests like `POST`
+
+**Why is accesing token from client side JavaScript bad?**
+
+If your window is compromised to another site. For eg. it could happen if
+opening different site without expliciting preventing it by giving
+`noopener noreferrer` in your `<a>` tags or `window.open`.
+
+In such cases, the third party site can have access to your window. Which has
+access to `localStorage`, so does the token you have saved in token.
+
+**So where should you keep the token**
+
+If you are not sure about authentication, please don't implement by yourself. It
+is very important part of any application you build. It has to be secure. If you
+can use third-party services, then use them. Here you don't have much option on
+how or where to store these tokens.
+
+If not, almost all frameworks/languages will have a reputed library to handle
+authentication. For NodeJS, it would be passportjs. In these implementations,
+you have option on where to store these tokens.
+
+I would recommend storing all long living tokens (like session ids, refresh
+tokens) in `Cookie` with `httpOnly` and `SameSite` enabled. As additional
+security, based on the application and the library/module you are using you can
+enable CSRF.
+
+For short living tokens, don't store them to any stotage. Since they are active
+only for few minutes (usually, 1-2mins), they can be stored in a variable in
+your code.
+
+I know I would be repeating myself, If you are not confident or you have no
+experience in building authentication for applications. Avoid implementing
+yourself, use a service. Keep your application and your users information safe.
