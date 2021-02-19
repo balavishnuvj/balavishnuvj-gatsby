@@ -67,7 +67,9 @@ export default function Projects({ ...props }) {
           </p>
           <p>
             Join the <Highlighted>exclusive 1 hour</Highlighted> session on Zoom{" "}
-            <Highlighted>every Tuesday at 7 PM IST</Highlighted>
+            <Highlighted>
+              every Tuesday at <a href="https://bala.at/ask-time">7 PM IST</a>
+            </Highlighted>
             <Ul>
               <li>
                 <a href="https://bala.at/ask-zoom">Zoom Meeting Link</a>
