@@ -168,6 +168,9 @@ export default function Navigation({ toggleTheme }) {
         </LeftSection>
         <RightSection>
           {/* <PageLink to="/hire">Hire</PageLink> */}
+          <PageLink to="/ama" activeClassName="active">
+            #AskBala
+          </PageLink>
           <PageLink to="/about" activeClassName="active">
             About
           </PageLink>
@@ -190,6 +193,9 @@ export default function Navigation({ toggleTheme }) {
         <MobileMenu>
           <MobilePageLink onClick={handleClose} to="/">
             Home
+          </MobilePageLink>
+          <MobilePageLink onClick={handleClose} to="/ama">
+            #AskBala
           </MobilePageLink>
           <MobilePageLink onClick={handleClose} to="/about">
             About
