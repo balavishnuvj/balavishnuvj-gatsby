@@ -87,7 +87,7 @@ const StripedBackground = styled.div`
 
 const Description = styled.p`
   @media (min-width: 699px) {
-    max-width: 400px;
+    max-width: 600px;
     margin-top: 40px;
     color: ${props => props.theme.ctaText};
   }
@@ -122,6 +122,7 @@ const HireMeLink = styled(Link)`
 
 const MessageLink = styled.a`
   color: ${props => (props.theme.isDark ? "#003553" : "#58bbfd")};
+  font-weight: bold;
 `
 
 export default function Home({ ...props }) {
@@ -163,9 +164,9 @@ export default function Home({ ...props }) {
               specializing in building websites and applications. Passionate
               about making the world a better place by solving problems using
               technology.
-              <p>
-                If you would like to get in touch or just want to have a chat,
-                shoot me a <MessageLink href={twitter}>message</MessageLink>.
+              <p style={{ margin: "16px 0" }}>
+                If you have any questions to be answered by Balavishnu. Ask them
+                on his AMA, <MessageLink href="/ama">#AskBala</MessageLink>.
               </p>
             </Description>
           </StripedBackground>

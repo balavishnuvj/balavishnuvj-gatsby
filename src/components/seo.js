@@ -12,7 +12,7 @@ import { useStaticQuery, graphql } from "gatsby"
 import balavishnu from "../../content/assets/meta-balavishnu.png"
 
 
-const SEO = ({ description, lang, meta, title }) => {
+const SEO = ({ description, lang, meta, title, image }) => {
   const { site } = useStaticQuery(
     graphql`
       query {
@@ -31,6 +31,7 @@ const SEO = ({ description, lang, meta, title }) => {
   )
 
   const metaDescription = description || site.siteMetadata.description
+  const metaImage = image || balavishnu;
 
   return (
     <Helmet
@@ -58,11 +59,11 @@ const SEO = ({ description, lang, meta, title }) => {
         },
         {
           property: `og:image`,
-          content: `${site.siteMetadata.siteUrl}${balavishnu}`,
+          content: `${site.siteMetadata.siteUrl}${metaImage}`,
         },
         {
           property: `twitter:image`,
-          content: `${site.siteMetadata.siteUrl}${balavishnu}`,
+          content: `${site.siteMetadata.siteUrl}${metaImage}`,
         },
         {
           name: `twitter:card`,

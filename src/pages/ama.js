@@ -5,6 +5,7 @@ import { graphql, useStaticQuery } from "gatsby"
 import PageInfo from "../components/PageInfo"
 import SEO from "../components/seo"
 import SubscriptionForm from "../components/SubscriptionForm"
+import amaBanner from "../../content/assets/ama-banner.png"
 
 const Container = styled.section`
   padding: 0 ${rhythm(1)};
@@ -54,7 +55,12 @@ export default function Projects({ ...props }) {
   } = data
   return (
     <Container>
-      <SEO title="Ask Me Anything" />
+      <SEO
+        title="Ask Me Anything"
+        description="Balavishnu answers all your questions about everything from working
+            with react to getting your PRs approved."
+        image={amaBanner}
+      />
       <PageInfo title="#AskBala" description="Ask Me Anything" />
       <ProjectsGrid>
         <div>

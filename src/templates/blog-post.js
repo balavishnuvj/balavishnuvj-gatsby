@@ -8,6 +8,7 @@ import styled from "styled-components"
 import Clock from "../../content/assets/svg/clock.svg"
 import { MDXProvider } from "@mdx-js/react"
 import mdxComponents from "../components/mdxComponents"
+import Sparkles from "../components/Sparkles"
 import SubscriptionForm from "../components/SubscriptionForm"
 export const BlogSection = styled.section`
   > blockquote {
@@ -108,6 +109,17 @@ const Footer = styled.footer`
   margin-top: 40px;
 `
 
+const Hr = styled.hr`
+  margin-bottom: ${rhythm(0.5)};
+  margin-top: ${rhythm(1.5)};
+  background-color: ${props => props.theme.textColor};
+`
+
+const Highlighted = styled.span`
+  color: ${props => props.theme.primaryColor};
+  font-weight: 700;
+`
+
 const BlogPostTemplate = ({ data, pageContext, location }) => {
   if (!data.mdx) {
     return null
@@ -162,12 +174,15 @@ const BlogPostTemplate = ({ data, pageContext, location }) => {
             <BlogSection>
               <MDXRenderer>{post.body}</MDXRenderer>
             </BlogSection>
-            <hr
-              style={{
-                marginBottom: rhythm(0.5),
-                marginTop: rhythm(1.5),
-              }}
-            />
+            <Hr />
+            <p>
+              Got a Question? Bala might have the answer. Get them answered on{" "}
+              <Sparkles>
+                <a href="/ama">
+                  <Highlighted>#AskBala</Highlighted>
+                </a>
+              </Sparkles>
+            </p>
             <BottomAction>
               <GithubEditLink
                 href={post.fields.editLink}
