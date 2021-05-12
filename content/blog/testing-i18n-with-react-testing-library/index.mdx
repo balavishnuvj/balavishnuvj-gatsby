@@ -1,0 +1,254 @@
+---
+title: "Testing i18n in React Applications"
+date: "2021-05-12T18:30:00.000Z"
+description: "Testing i18n(i18next) with React Testing Library"
+---
+
+Usually when we are testing applications with React Testing, we write queries
+like `screen.getByRole("list", { name: /fruits/i })`. But when our applications
+have to support Internationalization(i18n) and/or localization(l10n), we won’t
+be able to use same queries as above. Because our labels would most likely be
+something like `t('list.heading')`. Of course, in this case, our identifier for
+the label can be `t('Fruits')` but this doesn’t scale well for longer and
+namespaced texts.
+
+I would be using the `i18next` library for managing languages and `jest` as a
+test runner. However, the pattern followed here can be applied to other
+libraries too.
+
+### What do we want
+
+We want to support two kinds of queries.
+
+```js
+screen.getByRole("list", { name: /fruits/i })
+screen.getByRole("list", { name: "list.heading" })
+```
+
+**screen.getByRole("list", { name: /fruits/i })**
+
+Supporting these kinds of queries would make our writing and reading tests
+easier. As it would be much closer to what the user would read. But this comes
+with the cost of loading translations in every test, as this could be painful in
+Unit/Integrations tests.
+
+**screen.getByRole("list", { name: "list.heading" })**
+
+These kinds of queries are easy to write, as we don't have to load the
+translations in every test. But it gets difficult to read later. Then why do we
+want to support such queries if they can become hard to read? These kinds of
+queries help write tests where the text is not relevant.
+
+Since we want actual translations to work, we **wouldn't be mocking** the
+i18next.
+
+### Let's write some code
+
+Let's start with creating utils
+
+```js
+import i18n from "i18next"
+
+const DEFAULT_LANGUAGE = "en"
+const DEFAULT_NAMESPACE = "translations"
+
+export function initI18n(translations = {}) {
+  i18n.use(initReactI18next).init({
+    lng: DEFAULT_LANGUAGE,
+    fallbackLng: DEFAULT_LANGUAGE,
+    ns: [DEFAULT_NAMESPACE],
+    defaultNS: DEFAULT_NAMESPACE,
+    debug: false,
+    interpolation: {
+      escapeValue: false,
+    },
+    resources: { [DEFAULT_LANGUAGE]: { [DEFAULT_NAMESPACE]: translations } },
+  })
+}
+```
+
+So we have created a utility that would initialize i18next with a default
+language and translation.
+
+Let's initiate this before we run any test. We can add this in
+`setupFilesAfterEnv`
+
+```js
+import { initI18n } from "./test-utils"
+
+beforeAll(() => {
+  initI18n()
+})
+```
+
+I prefer initialising with no translations. This would ensure where ever
+translations are required we can load them on demand.
+
+Anyways, we should be able to add some test now.
+
+```js
+it("should render list of fruits", () => {
+  render(<FruitList />)
+  const list = screen.getByRole("list", {
+    name: /list.heading/i,
+  })
+})
+```
+
+This looks okay, but we should be able to add actual text in the tests too. So
+let's create a utility to do that too.
+
+```js
+export function addI18nResources(
+  resource = {},
+  { ns = DEFAULT_NAMESPACE, lang = DEFAULT_LANGUAGE } = {}
+) {
+  i18n.addResourceBundle(lang, ns, resource, true, true)
+}
+```
+
+Now we should be able to load translations.
+
+```js
+import { addI18nResources } from "test-utils"
+
+it("should render list of fruits", () => {
+  addI18nResources({ landing: { heading: "Fruits" } })
+  render(<FruitList />)
+  const list = screen.getByRole("list", {
+    name: /fruits/i,
+  })
+})
+```
+
+This one looks great, but there is a minor bug. Are you able to spot it?
+
+Let me help you.
+
+**Snippet 1**
+
+```js
+import { addI18nResources } from "test-utils"
+
+it("should render list of fruits without translation", () => {
+  render(<FruitList />)
+  const list = screen.getByRole("list", {
+    name: /list.heading/i,
+  })
+})
+
+it("should render list of fruits with translation", () => {
+  addI18nResources({ landing: { heading: "Fruits" } })
+  render(<FruitList />)
+  const list = screen.getByRole("list", {
+    name: /fruits/i,
+  })
+})
+```
+
+**Snippet 2**
+
+```js
+import { addI18nResources } from "test-utils"
+
+it("should render list of fruits with translation", () => {
+  addI18nResources({ landing: { heading: "Fruits" } })
+  render(<FruitList />)
+  const list = screen.getByRole("list", {
+    name: /fruits/i,
+  })
+})
+
+it("should render list of fruits without translation", () => {
+  render(<FruitList />)
+  const list = screen.getByRole("list", {
+    name: /list.heading/i,
+  })
+})
+```
+
+Our `Snippet 1` would pass but `Snippet 2` would fail.
+
+**Stop here if you want to think about why `Snippet 1` and `Snippet 2` would act
+differently.**
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+Okay, so the problem is when we add mock using `addI18nResources` the
+resources(mocks) are loaded, but they are never cleaned. We can call
+`addI18nResources` in one of our `setupFilesAfterEnv`.
+
+### Wrapping up
+
+Now it should something like
+
+```js
+import { initI18n } from "./test-utils"
+
+const INITIAL_TRANSLATION = {}
+
+beforeAll(() => {
+  initI18n(INITIAL_TRANSLATION)
+})
+
+afterEach(() => {
+  // this would remove all existing translation and load initial one.
+  addI18nResources(INITIAL_TRANSLATION)
+})
+```
+
+And our `test-utils.js` whould look like
+
+```js
+import i18n from "i18next"
+
+const DEFAULT_LANGUAGE = "en"
+const DEFAULT_NAMESPACE = "translations"
+
+export function initI18n(translations = {}) {
+  i18n.use(initReactI18next).init({
+    lng: DEFAULT_LANGUAGE,
+    fallbackLng: DEFAULT_LANGUAGE,
+    ns: [DEFAULT_NAMESPACE],
+    defaultNS: DEFAULT_NAMESPACE,
+    debug: false,
+    interpolation: {
+      escapeValue: false,
+    },
+    resources: { [DEFAULT_LANGUAGE]: { [DEFAULT_NAMESPACE]: translations } },
+  })
+}
+
+export function addI18nResources(
+  resource = {},
+  { ns = DEFAULT_NAMESPACE, lang = DEFAULT_LANGUAGE } = {}
+) {
+  i18n.addResourceBundle(lang, ns, resource, true, true)
+}
+```
+
+**Note:** We are mocking the translation resources without actually calling the
+network request. I felt this was a simple approach without setting up the actual
+network mocks in every test. Reach out to me if you want me to cover that in
+this blog too.
+
+Now we should be able to support both kinds of queries in our tests. I hope this
+was helpful.
