@@ -1,0 +1,147 @@
+---
+title: "State: Single Source of Truth"
+date: "2021-09-17T18:30:00.000Z"
+description: "Why shoudn't replicate state ❌"
+---
+
+It is always advised to have a single source of truth for your application.
+Before we start, let's see what exactly the state of the application is.
+
+`State` is part of the application that holds a source of data. It could be your
+database like `Table`, `Document` or React states like `useState` or
+`useReducer`.
+
+## Single Source of Truth
+
+Any time you query for data, it should be fulfilled by a unique set of `State`.
+For eg. If you ask for **List of all users who have commented on a post**, you
+should get a list of users from set tables such that this information is not
+replicated in any other data.
+
+```sql
+select *
+from users u
+inner join post_comments pc on pc.user_id = u.user_id
+where pc.post_id = 1
+```
+
+Here, we are querying from two tables, `users` and `post_comments`. This is
+fine, as none of the information is repeated;
+
+### Examples where you might not have a single source of truth
+
+There might be a lot of cases where we might not be having a single source of
+truth. It could be an _aggregate table_, a _caching_, a _copying data from
+source props_, or _requesting data from an AJAX request_. In all of these
+instances, we are copying data from one source to another. There are many other
+instances where you might be doing the same.
+
+But if you had created an aggregate table, `users_comments`, which has all the
+comments of a given user, then we will have two sources of data for the same
+query.
+
+```sql
+/* Query 1 */
+select *
+from users u
+inner join post_comments pc on pc.user_id = u.user_id
+where pc.post_id = 1
+
+/* Query 2 */
+select *
+from users_comments
+where post_id = 1
+```
+
+Essentially both `Query 1` and `Query 2` are returning the same data.
+
+**Another example**
+
+```js
+function NumberList() {
+  const [numbers, setNumbers] = useState()
+  return <Child state={state} />
+}
+
+function EvenNumbers({ numbers }) {
+  const [evenNumbers, setEvenNumbers] = useState()
+  useEffect(() => {
+    setEvenNumbers(numbers.filter(filterEvenNumbers))
+  }, [numbers])
+}
+```
+
+Let's say we have a list of numbers, and we want to filter out the numbers that
+are even in the `EvenNumbers` component.
+
+Here, `evenNumbers` copied from `numbers`, But there is a possibility that these
+sources can diverge in the future. Maybe a bug in code, you come infrastructure
+outage caused write in one of the tables failed.
+
+**There is nothing that ensures `numbers` and `evenNumbers` hold the same source
+of truth.** You might be thinking `useEffect` ensures that. But it is not. It is
+creating a copy of data, there is no check to make sure that `useEffect` is not
+removed in the future.
+
+### For eg.
+
+When `numbers` was `null` our code broke, so add a check to make sure that if it
+is null then copy doesn't happen.
+
+```diff
+function NumberList() {
+  const [numbers, setNumbers] = useState()
+  return <Child state={state} />
+}
+
+function EvenNumbers({ numbers }) {
+  const [evenNumbers, setEvenNumbers] = useState()
+  useEffect(() => {
++   if(!state) return
+    setEvenNumbers(numbers.filter(filterEvenNumbers))
+  }, [numbers])
+}
+```
+
+**But this introduces a new problem.** In this example, lets say `numbers` is
+`[2]` and we sync it to `evenNumbers` so it will be `[2]`. Now, let us update
+the `numbers` to `null`. Now because of the check we introduced in `useEffect`,
+`copyState` will be `[2]` and state will be `null`. Our state is **not in
+sync**.
+
+### Syncing state
+
+Whenever you have an observer listening to data and it updating another source
+of data. Then it is called _syncing data_. For eg. in our above react example,
+we are syncing using `useEffect`. In _caching_ it could be our cache
+invalidation logic, in the case of _aggregate_ table, it could the triggers.
+
+By definition, we have a separate function to sync data. This implies that there
+is a possibility that our sync logic might not run. It could be because some
+developers decided to add some logic to sync data.
+
+If possible we should be deriving data from the source instead of copying data.
+For eg.
+
+```diff
+function NumberList() {
+  const [numbers, setNumbers] = useState()
+  return <Child state={state} />
+}
+
+function EvenNumbers({ numbers }) {
+-  const [evenNumbers, setEvenNumbers] = useState()
++ const evenNumbers = numbers.filter(filterEvenNumbers);
+-  useEffect(() => {
+-   if(!state) return
+-    setEvenNumbers(numbers.filter(filterEvenNumbers))
+-  }, [numbers])
+}
+```
+
+## Avoid copying state
+
+- Avoid copying state, instead derive state from the source. Copying introduce a
+  latent bug.
+- If you have to copy state, make sure that you have additional checks to make
+  sure sync is happening.
