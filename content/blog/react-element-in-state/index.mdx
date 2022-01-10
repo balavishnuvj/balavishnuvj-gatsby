@@ -1,0 +1,304 @@
+---
+title: "React Element in State: What could go wrong?"
+date: "2022-01-10T18:30:00.000Z"
+description:
+  "Storing React elements in state could lead to some unexpected behavior. This
+  blog will show you how to avoid it."
+---
+
+import {
+  TodoListV1,
+  TodoListV2,
+  TodoListV3,
+  TodoListV4,
+  TodoListV5,
+  TodoListV6,
+} from "./components.jsx"
+
+All most applications we build have some form of dynamic UI. Where user
+interacts with the app, and then we create/update/delete elements in the app. We
+use `React State` to store dynamic values. And our interactions update the
+`state`, which updates our UI. But we need to be a bit careful when we store
+these dynamic UIs (React Elements) in state instead of storing just the data
+required to render React Elements.
+
+Let’s see what could go wrong using our favorite example, **ToDo** list app.
+Where we can just add some ToDo's (For sake a simplicity, ToDo's are generated
+randomly).
+
+<TodoListV1 />
+
+_You can click on "Add ToDo" to create your ToDo list_
+
+```jsx
+function TodoList() {
+  const [todos, setTodos] = React.useState([])
+  function handleAddTodo() {
+    setTodos([
+      ...todos,
+      <Todo key={todos.length} text={generateRandomTodo()} />,
+    ])
+  }
+  return (
+    <CodeDemo>
+      <ul style={{ padding: "10px" }}>{todos}</ul>
+      <button onClick={handleAddTodo}>Add ToDo</button>
+    </CodeDemo>
+  )
+}
+```
+
+Here, we are appending the component `<Todo />` to the state `todos`. Do you see
+any potenial bug here? If you do then awesome 🕺, let see how we can solve it in
+this blog.
+
+If you weren't able to see any bug, you can try to add some more features to
+discover the bug. Let’s add a way to delete a ToDo.
+
+<TodoListV2 />
+
+---
+
+```diff
+  function handleAddTodo() {
+    setTodos([
+      ...todos,
+      <Todo
+        key={todos.length}
+        text={generateRandomTodo()}
++       onDelete={() => handleDelete(todos.length)}
+      />,
+    ])
+  }
+```
+
+To discover the bug, you can try to adding three ToDos and then delete the
+second one. You might see that you are deleting the second ToDo, but it is
+deleting the third one too.
+
+To inspect what is happening, we can add logs to our `handleDelete` function. We
+see that when are deleting the second item, the index is `1` as expected. But
+the `todos` just has two items, it should have been three.
+
+```jsx {4-7,15}
+function TodoList() {
+  const [todos, setTodos] = React.useState([])
+
+  function handleDelete(index) {
+    console.log("handleDelete", { index, todos })
+    setTodos(todos.filter((_, i) => i !== index))
+  }
+
+  function handleAddTodo() {
+    setTodos([
+      ...todos,
+      <Todo
+        key={todos.length}
+        text={generateRandomTodo()}
+        onDelete={() => handleDelete(todos.length)}
+      />,
+    ])
+  }
+  return (
+    <CodeDemo>
+      <ul style={{ padding: "10px" }}>{todos}</ul>
+      <button onClick={handleAddTodo}>Add ToDo</button>
+    </CodeDemo>
+  )
+}
+```
+
+**We have a closure** bug here, so we can see that the `todos` has the value
+when `() => handleDelete(index)` was created for the second item. At that moment
+`todos` had only two items. So we can fix that by using the state setter
+function.
+
+```diff
+  function handleDelete(index) {
+-   setTodos(todos.filter((_, i) => i !== index))
++   setTodos(currentTodos => currentTodos.filter((_, i) => i !== index))
+  }
+```
+
+<TodoListV3 />
+
+---
+
+Oh! awesome, we have fixed the bug. But we have a problem. If you try adding
+another ToDo, after deleting you see that we get a warning from React that there
+are duplicate keys. But for now let it be 🤷.
+
+Let’s add another feature to our ToDo app. We want our users to be a bit careful
+when the delete a ToDo. Let’s introduce **delete mode**. They can only delete
+ToDo's if they are in delete mode.
+
+```jsx {3,6-9,25-33}
+function TodoList() {
+  const [todos, setTodos] = React.useState([])
+  const [isDeleteMode, setIsDeleteMode] = React.useState(false)
+
+  function handleDelete(index) {
+    if (!isDeleteMode) {
+      alert("Please enable delete mode first")
+      return
+    }
+    setTodos(currentTodos => currentTodos.filter((_, i) => i !== index))
+  }
+
+  function handleAddTodo() {
+    setTodos([
+      ...todos,
+      <Todo
+        key={todos.length}
+        text={generateRandomTodo()}
+        onDelete={() => handleDelete(todos.length)}
+      />,
+    ])
+  }
+  return (
+    <CodeDemo>
+      <div>
+        <input
+          type="checkbox"
+          checked={isDeleteMode}
+          onChange={() => setIsDeleteMode(!isDeleteMode)}
+          id="deleteMode1"
+        ></input>
+        <label htmlFor="deleteMode1"> Enable Delete Mode</label>
+      </div>
+
+      <ul style={{ padding: "10px" }}>{todos}</ul>
+      <button onClick={handleAddTodo}>Add ToDo</button>
+    </CodeDemo>
+  )
+}
+```
+
+---
+
+<TodoListV4 />
+
+---
+
+Oh no! We have a bug here. We can see that when we delete a ToDo, we are getting
+an alert🚨 saying **Please enable delete mode first**. Even though we have
+enabled the delete mode. When we debug we see that the `isDeleteMode` is
+`false`. This is the same bug as before 🤦. Our `isDeleteMode` is not being
+updated. It is same as when the `() => handleDelete(index)` was created by
+`handleAddTodo`.
+
+Our earlier fix only worked, when `handleDelete` was only dependent on one state
+`todos`. But now it dependent on two states, `isDeleteMode` and `todos`.
+
+To fix this, we will have to re-create `() => handleDelete(index)` when
+`isDeleteMode` changes. But that will only solve the problem for now. If
+`handleDelete` has more dependency, then our current fix will break.
+
+Let’s fix this once in for all. We will refactor it a bit, instead of `todos`
+keeping the React elements, let it just hold the data required to render the
+element.
+
+```diff
+.
+.
+
+  function handleAddTodo() {
+-   setTodos([
+-     ...todos,
+-     <Todo
+-       key={todos.length}
+-       text={generateRandomTodo()}
+-       onDelete={() => handleDelete(todos.length)}
+-     />,
+-   ])
++   setTodos([...todos, { text: generateRandomTodo() }])
+  }
+
+.
+.
+
+- <ul style={{ padding: "10px" }}>{todos}</ul>
++ <ul style={{ padding: "10px" }}>
++   {todos.map((todo, index) => (
++     <Todo
++       key={index}
++       onDelete={() => handleDelete(index)}
++       text={todo.text}
++     />
++   ))}
++ </ul>
+.
+.
+```
+
+<TodoListV5 />
+
+---
+
+**Bonus**
+
+Our `key` for `Todo` is not unique. We can fix that by using `id` instead of
+using `index`. We need any unique identifier while creating todo. We could use
+the current time. But that is not always good, if the backend is saving this
+data, let the backend create this ID for you. But for now the current date time
+works fine.
+
+<TodoListV6 />
+
+---
+
+Here is our final solution. We have a unique ID for each ToDo. We can use that
+to delete our ToDo too.
+
+```jsx
+function TodoList() {
+  const [todos, setTodos] = React.useState([])
+  const [isDeleteMode, setIsDeleteMode] = React.useState(false)
+
+  function handleDelete(idToDelete) {
+    if (!isDeleteMode) {
+      alert("Please enable delete mode first")
+      return
+    }
+    setTodos(currentTodos =>
+      currentTodos.filter(todo => todo.id !== idToDelete)
+    )
+  }
+
+  function handleAddTodo() {
+    setTodos([
+      ...todos,
+      { text: generateRandomTodo(), id: new Date().getTime() },
+    ])
+  }
+
+  return (
+    <CodeDemo>
+      <div>
+        <input
+          type="checkbox"
+          checked={isDeleteMode}
+          onChange={() => setIsDeleteMode(!isDeleteMode)}
+          id="deleteMode"
+        ></input>
+        <label htmlFor="deleteMode"> Enable Delete Mode</label>
+      </div>
+
+      <ul style={{ padding: "10px" }}>
+        {todos.map(todo => (
+          <Todo
+            key={todo.id}
+            onDelete={() => handleDelete(todo.id)}
+            text={todo.text}
+          />
+        ))}
+      </ul>
+      <button onClick={handleAddTodo}>Add ToDo</button>
+    </CodeDemo>
+  )
+}
+```
+
+Well, that fixes our bugs. To make sure that we don't add these bugs later, you
+can learn about writing tests for them from
+[Testing Lists Items With React Testing Library](https://balavishnuvj.com/blog/testing-lists-items-with-react-testing-library/).
