@@ -41,7 +41,8 @@ function preToCodeBlock(preProps) {
     // code props
     preProps.children.props &&
     // if children is actually a <code>
-    preProps.children.props.mdxType === "code"
+    (preProps.children.props.mdxType === "code" ||
+      preProps.children.type === "code")
   ) {
     // we have a <pre><code> situation
     const {
@@ -52,7 +53,8 @@ function preToCodeBlock(preProps) {
 
     const matches = className.match(/language-(?<lang>.*)/)
     return {
-      codeString: codeString.trim(),
+      codeString:
+        typeof codeString === "string" ? codeString.trim() : codeString,
       className,
       language:
         matches && matches.groups && matches.groups.lang
@@ -71,7 +73,7 @@ function calculateLinesToHighlight(meta) {
     return index => {
       const lineNumber = index + 1
       const inRange = lineNumbers.some(([start, end]) =>
-        end ? lineNumber >= start && lineNumber <= end : lineNumber === start
+        end ? lineNumber >= start && lineNumber <= end : lineNumber === start,
       )
       return inRange
     }
@@ -96,11 +98,7 @@ function Code({ codeString, language, metastring }) {
   const shouldShowLineNumbers =
     !metastring || !metastring.includes("no-line-numbers")
   return (
-    <Highlight
-      code={codeString}
-      language={language}
-      theme={theme}
-    >
+    <Highlight code={codeString} language={language} theme={theme}>
       {({ className, style, tokens, getLineProps, getTokenProps }) => (
         <div css={wrapperStyles}>
           <Pre className={className} style={style} css={preStyles}>
