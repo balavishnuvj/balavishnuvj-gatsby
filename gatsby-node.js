@@ -1,6 +1,15 @@
 const path = require(`path`)
 const { createFilePath } = require(`gatsby-source-filesystem`)
 
+exports.createSchemaCustomization = ({ actions }) => {
+  const { createTypes } = actions
+  createTypes(`
+    type Mdx implements Node {
+      timeToRead: Int
+    }
+  `)
+}
+
 exports.createPages = async ({ graphql, actions }) => {
   const { createPage } = actions
 
@@ -9,17 +18,18 @@ exports.createPages = async ({ graphql, actions }) => {
     `
       {
         allMdx(
-          sort: { fields: [frontmatter___date], order: DESC }
+          sort: { frontmatter: { date: DESC } }
           limit: 1000
         ) {
-          edges {
-            node {
-              fields {
-                slug
-              }
-              frontmatter {
-                title
-              }
+          nodes {
+            fields {
+              slug
+            }
+            frontmatter {
+              title
+            }
+            internal {
+              contentFilePath
             }
           }
         }
@@ -32,17 +42,17 @@ exports.createPages = async ({ graphql, actions }) => {
   }
 
   // Create blog posts pages.
-  const posts = result.data.allMdx.edges
+  const posts = result.data.allMdx.nodes
 
   posts.forEach((post, index) => {
-    const previous = index === posts.length - 1 ? null : posts[index + 1].node
-    const next = index === 0 ? null : posts[index - 1].node
-    const path = `/blog${post.node.fields.slug}`
+    const previous = index === posts.length - 1 ? null : posts[index + 1]
+    const next = index === 0 ? null : posts[index - 1]
+    const path = `/blog${post.fields.slug}`
     createPage({
       path: path,
-      component: blogPost,
+      component: `${blogPost}?__contentFilePath=${post.internal.contentFilePath}`,
       context: {
-        slug: post.node.fields.slug,
+        slug: post.fields.slug,
         previous,
         next,
       },
@@ -60,13 +70,28 @@ exports.onCreateNode = ({ node, actions, getNode }) => {
       node,
       value,
     })
+    const filePath = node.internal.contentFilePath || node.fileAbsolutePath
+    if (filePath) {
+      createNodeField({
+        name: "editLink",
+        node,
+        value: `https://github.com/balavishnuvj/balavishnuvj-gatsby/edit/master${filePath.replace(
+          __dirname,
+          ""
+        )}`,
+      })
+    }
+    
+    // Calculate reading time (average 200 words per minute)
+    const wordsPerMinute = 200
+    const body = node.body || ''
+    const wordCount = body.split(/\s+/).length
+    const timeToRead = Math.ceil(wordCount / wordsPerMinute)
+    
     createNodeField({
-      name: "editLink",
+      name: "timeToRead",
       node,
-      value: `https://github.com/balavishnuvj/balavishnuvj-gatsby/edit/master${node.fileAbsolutePath.replace(
-        __dirname,
-        ""
-      )}`,
+      value: timeToRead,
     })
   }
 }

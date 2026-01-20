@@ -1,8 +1,9 @@
 import React from "react"
-import Highlight, { defaultProps } from "prism-react-renderer"
+import { Highlight, themes } from "prism-react-renderer"
 import styled, { css } from "styled-components"
-import theme from "prism-react-renderer/themes/nightOwl"
 import { bpDesktopOnly } from "../utils/breakpoints"
+
+const theme = themes.nightOwl
 
 // import { LiveProvider, LiveEditor, LiveError, LivePreview } from "react-live"
 import { rhythm } from "../utils/typography"
@@ -96,7 +97,6 @@ function Code({ codeString, language, metastring }) {
     !metastring || !metastring.includes("no-line-numbers")
   return (
     <Highlight
-      {...defaultProps}
       code={codeString}
       language={language}
       theme={theme}

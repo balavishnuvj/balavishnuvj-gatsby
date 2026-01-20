@@ -1,6 +1,5 @@
 import React from "react"
 import { Link, graphql } from "gatsby"
-import { MDXRenderer } from "gatsby-plugin-mdx"
 import Bio from "../components/bio"
 import SEO from "../components/seo"
 import { rhythm } from "../utils/typography"
@@ -120,7 +119,7 @@ const Highlighted = styled.span`
   font-weight: 700;
 `
 
-const BlogPostTemplate = ({ data, pageContext, location }) => {
+const BlogPostTemplate = ({ data, pageContext, location, children }) => {
   if (!data.mdx) {
     return null
   }
@@ -166,13 +165,13 @@ const BlogPostTemplate = ({ data, pageContext, location }) => {
               <BlogFoot>
                 <BlogTime>
                   <ClockIcon />
-                  {post.timeToRead} mins |{" "}
+                  {post.fields.timeToRead} mins |{" "}
                 </BlogTime>
                 <span>{post.frontmatter.date}</span>
               </BlogFoot>
             </header>
             <BlogSection>
-              <MDXRenderer>{post.body}</MDXRenderer>
+              {children}
             </BlogSection>
             <Hr />
             <p>
@@ -253,10 +252,9 @@ export const pageQuery = graphql`
     mdx(fields: { slug: { eq: $slug } }) {
       id
       excerpt(pruneLength: 160)
-      body
-      timeToRead
       fields {
         editLink
+        timeToRead
       }
       frontmatter {
         title

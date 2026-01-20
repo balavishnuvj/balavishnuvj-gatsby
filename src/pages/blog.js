@@ -116,7 +116,7 @@ const BlogIndex = ({ data, location }) => {
                 <BlogFoot>
                   <BlogTime>
                     <ClockIcon />
-                    {node.timeToRead} mins
+                    {node.fields.timeToRead} mins
                   </BlogTime>
                   <span>{node.frontmatter.date}</span>
                 </BlogFoot>
@@ -146,13 +146,13 @@ export const pageQuery = graphql`
         title
       }
     }
-    allMdx(sort: { fields: [frontmatter___date], order: DESC }) {
+    allMdx(sort: { frontmatter: { date: DESC } }) {
       edges {
         node {
           excerpt
-          timeToRead
           fields {
             slug
+            timeToRead
           }
           frontmatter {
             date(formatString: "MMMM DD, YYYY")

@@ -5,11 +5,11 @@ description: "Testing i18n(i18next) with React Testing Library"
 ---
 
 Usually when we are testing applications with React Testing, we write queries
-like `screen.getByRole("list", { name: /fruits/i })`. But when our applications
-have to support Internationalization(i18n) and/or localization(l10n), we won’t
+like `screen.getByRole("list", \{ name: /fruits/i \})`. But when our applications
+have to support Internationalization(i18n) and/or localization(l10n), we won't
 be able to use same queries as above. Because our labels would most likely be
 something like `t('list.heading')`. Of course, in this case, our identifier for
-the label can be `t('Fruits')` but this doesn’t scale well for longer and
+the label can be `t('Fruits')` but this doesn't scale well for longer and
 namespaced texts.
 
 I would be using the `i18next` library for managing languages and `jest` as a
@@ -25,14 +25,14 @@ screen.getByRole("list", { name: /fruits/i })
 screen.getByRole("list", { name: "list.heading" })
 ```
 
-**screen.getByRole("list", { name: /fruits/i })**
+**screen.getByRole("list", \{ name: /fruits/i \})**
 
 Supporting these kinds of queries would make our writing and reading tests
 easier. As it would be much closer to what the user would read. But this comes
 with the cost of loading translations in every test, as this could be painful in
 Unit/Integrations tests.
 
-**screen.getByRole("list", { name: "list.heading" })**
+**screen.getByRole("list", \{ name: "list.heading" \})**
 
 These kinds of queries are easy to write, as we don't have to load the
 translations in every test. But it gets difficult to read later. Then why do we
