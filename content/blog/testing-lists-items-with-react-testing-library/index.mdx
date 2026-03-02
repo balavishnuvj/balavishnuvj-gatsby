@@ -21,7 +21,7 @@ function FruitList() {
   return (
     <section>
       <h1 id="fruits-heading">Fruits</h1>
-      <ul aria-labelledby="fruits-heading">
+      <ul aria-label="fruits">
         {fruits.map(fruit => (
           <li key={fruit}>{fruit}</li>
         ))}
@@ -92,7 +92,7 @@ it("should render list of fruits in a specific order by dom snapshot", () => {
   })
   expect(list).toMatchInlineSnapshot(`
       <ul
-        aria-label="Fruits"
+        aria-label="fruits"
       >
         <li>
           Bananas
