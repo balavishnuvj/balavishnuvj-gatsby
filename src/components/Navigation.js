@@ -32,6 +32,23 @@ const PageLink = styled(BaseLink)`
   }
 `
 
+const ContactLink = styled(GatsbyLink)`
+  margin-left: 8px;
+  padding: 8px 20px;
+  background-color: ${props => props.theme.primaryColor};
+  color: ${props => props.theme.ctaText};
+  border-radius: 4px;
+  text-decoration: none;
+  box-shadow: none;
+  font-weight: bold;
+  font-size: 14px;
+  transition: opacity 0.2s ease;
+  &:hover {
+    opacity: 0.9;
+    color: ${props => props.theme.ctaText};
+  }
+`
+
 const MobilePageLink = styled(BaseLink)`
   color: white;
   padding: ${rhythm(1)} 0;
@@ -167,15 +184,16 @@ export default function Navigation({ toggleTheme }) {
           </LogoLink>
         </LeftSection>
         <RightSection>
-          {/* <PageLink to="/hire">Hire</PageLink> */}
-          <PageLink to="/ama" activeClassName="active">
-            #AskBala
+          <PageLink to="/case-studies" activeClassName="active">
+            Case Studies
+          </PageLink>
+          <PageLink to="/blog" activeClassName="active">
+            Blog
           </PageLink>
           <PageLink to="/about" activeClassName="active">
             About
           </PageLink>
-          <PageLink to="/projects">Projects</PageLink>
-          <PageLink to="/blog">Blogs</PageLink>
+          <ContactLink to="/contact">Contact</ContactLink>
           <ColorModeToggle toggle={toggleTheme} />
         </RightSection>
       </WebNav>
@@ -194,21 +212,18 @@ export default function Navigation({ toggleTheme }) {
           <MobilePageLink onClick={handleClose} to="/">
             Home
           </MobilePageLink>
-          <MobilePageLink onClick={handleClose} to="/ama">
-            #AskBala
-          </MobilePageLink>
-          <MobilePageLink onClick={handleClose} to="/about">
-            About
-          </MobilePageLink>
-          <MobilePageLink onClick={handleClose} to="/projects">
-            Projects
+          <MobilePageLink onClick={handleClose} to="/case-studies">
+            Case Studies
           </MobilePageLink>
           <MobilePageLink onClick={handleClose} to="/blog">
             Blog
           </MobilePageLink>
-          {/* <MobilePageLink onClick={handleClose} to="/hire">
-            Hire
-          </MobilePageLink> */}
+          <MobilePageLink onClick={handleClose} to="/about">
+            About
+          </MobilePageLink>
+          <MobilePageLink onClick={handleClose} to="/contact">
+            Contact
+          </MobilePageLink>
         </MobileMenu>
       )}
     </header>

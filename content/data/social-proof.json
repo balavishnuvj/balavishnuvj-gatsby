@@ -1,0 +1,28 @@
+{
+  "metrics": [
+    { "number": "9", "label": "Years in Engineering" },
+    { "number": "35M+", "label": "Users Scaled" },
+    { "number": "3000+", "label": "LinkedIn Followers" }
+  ],
+  "testimonials": [
+    {
+      "quote": "Bala helped us figure out what was actually slowing us down and worked with the team to fix it. Our frontend architecture is in a much better place now.",
+      "name": "Founder",
+      "role": "Stealth Fintech Startup",
+      "type": "anonymized"
+    },
+    {
+      "quote": "He brought clarity to our technical roadmap when we really needed it. Our team ships faster and with a lot more confidence now.",
+      "name": "CTO",
+      "role": "Stealth HealthTech Startup",
+      "type": "anonymized"
+    },
+    {
+      "quote": "What I liked most is that Bala doesn't just tell you what to do — he gets in there and builds with you. Exactly what we needed at our stage.",
+      "name": "Co-founder",
+      "role": "Stealth EdTech Startup",
+      "type": "anonymized"
+    }
+  ],
+  "credibility": ["CarbonSync", "HealthifyMe", "Kuliza/Acko", "Open Source Contributor"]
+}
