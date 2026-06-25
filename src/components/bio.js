@@ -29,10 +29,9 @@ const Bio = () => {
         siteMetadata {
           author {
             name
-            summary
           }
           social {
-            twitterFollow
+            linkedin
           }
         }
       }
@@ -66,10 +65,13 @@ const Bio = () => {
         />
       )}
       <P>
-        Written by <strong>{author.name}</strong>.{` `}
-        Follow him on <a href={social.twitterFollow}>Twitter </a>
-        to know what he is working on. Also, his opinions, thoughts and
-        solutions in Web Dev.
+        Written by <strong>{author.name}</strong>, an engineer and ex-CTO
+        building with GenAI. He writes about building and scaling software.
+        Find him on{` `}
+        <a href={social.linkedin} target="_blank" rel="noopener noreferrer">
+          LinkedIn
+        </a>
+        .
       </P>
     </div>
   )

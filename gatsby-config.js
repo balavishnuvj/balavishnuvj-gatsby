@@ -1,13 +1,13 @@
 const projects = require("./content/data/projects.json")
+const socialProof = require("./content/data/social-proof.json")
 
 module.exports = {
   siteMetadata: {
-    title: `Balavishnu V J | Software Engineer`,
+    title: `Balavishnu V J | Engineer & ex-CTO`,
     author: {
       name: `Balavishnu V J`,
-      summary: `who lives and works in Bangalore India making world a better place by code.`,
     },
-    description: `Passionate about making the world a better place by solving problems using technology. Write to me at hello@balavishnuvj.com`,
+    description: `Balavishnu V J is a full-stack engineer and ex co-founder & CTO. He scaled systems to 35M+ users and now builds with GenAI in production. He writes about how software gets built and scaled.`,
     siteUrl: `https://balavishnuvj.com`,
     social: {
       email: "hello@balavishnuvj.com",
@@ -18,6 +18,7 @@ module.exports = {
       twitterId: "vjbalavishnu",
     },
     projects,
+    socialProof,
   },
   plugins: [
     `gatsby-plugin-styled-components`,
@@ -73,7 +74,7 @@ module.exports = {
     {
       resolve: `gatsby-plugin-manifest`,
       options: {
-        name: `Balavishnu V J | Software Engineer`,
+        name: `Balavishnu V J | Engineer & ex-CTO`,
         short_name: `Balavishnu`,
         start_url: `/`,
         background_color: `#ffffff`,
