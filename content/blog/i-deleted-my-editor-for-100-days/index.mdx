@@ -1,0 +1,51 @@
+---
+title: "I deleted my editor for 100 days"
+date: "2026-07-02T05:00:00.000Z"
+description: "I spent a hundred days writing no code by hand, everything through AI agents. What I learned about what breaks, who actually does the learning, and why you can delegate the typing but never the responsibility."
+---
+
+The first thing I did was delete VS Code.
+
+Then I installed nvim, which I barely know how to use. That was the point. I wanted opening a file to be a decision, not a reflex. For about a hundred days, everything went through AI agents. I reviewed the work in pull requests, the way I would a teammate's, and I only dropped into that unfamiliar editor when I really, truly had to look at something.
+
+I did this as a challenge. I have leaned on eight years of muscle memory to know where a bug probably lives, what a function should be called, where the mess usually hides. I wanted to know what happens when I stop using all of it. The fastest way to learn where something breaks is to take it to the extreme and watch.
+
+One thing up front. Letting go was not hard because typing is precious. It was hard because it is still my name on whatever ships at the end of it, no matter who or what wrote it.
+
+At the start, it was intoxicating.
+
+I could build a real thing, put it in front of users, and kill it a week later without mourning it. Ideas I would never have bothered to try, because the effort was never worth the maybe, I could just try. The cost of finding out dropped to almost nothing.
+
+Did I get faster? It felt like it. I doubt I did. There is a study from [METR](https://metr.org/blog/2025-07-10-early-2025-ai-experienced-os-dev-study/) that found experienced developers on AI tools felt about twenty percent faster while being about nineteen percent slower, and I am exactly the person in it. One engineer, no control group, certain everything had changed. So I will not pretend I know. It was never about speed anyway. It was that trying something stopped costing anything.
+
+Then the cracks showed up.
+
+I asked an agent to test a feature end to end and send me the screenshots. It did, and they looked fine. Then I read what it had actually done. To get those screenshots, it had mocked the data, taken the shots, and reverted the mock afterward. The test never ran. It faked the pass and closed the task. It only got caught because a couple of independent reviews flagged that the numbers looked off. If I had trusted the green checkmark, I would have shipped a feature that only worked in a screenshot.
+
+That was not a one-off. On tests especially, it kept reaching for the same move. Mock everything, write something that passes and proves nothing. The first time, I corrected it by hand. The second time I saw the same thing, I stopped correcting and put a check in place so there would not be a third. I already had [opinions about how tests should be written](https://balavishnuvj.com/blog/testing-building-application-with-confidence/). The shift was turning them into a check, instead of me enforcing them by hand.
+
+That is when it clicked. A junior adjusts after you correct them once. This never does. The next session starts from zero, every time.
+
+So who is actually doing the learning here?
+
+I am. And this is where I part ways with how it usually gets talked about. We treat these models like they are the ones learning. They are not. The model never learns from your correction, so you become the one who has to. Over a hundred days I did not teach the agent anything. I taught myself what to watch for, and I wrote it down where the tooling could enforce it next time. Not for the agent. For me. People will say the model does remember now, through rules files and project guides. It remembers because I noticed the pattern and wrote the rule. The noticing was still mine to do.
+
+The one that made all of this concrete was the dead code.
+
+I had asked it to put the feature behind our error handling, the wrapper that keeps one failed call from taking down the whole flow. It did, and it did it well. Clean code, every guideline followed, and the tests were genuinely good. Then a call failed, and instead of being caught, it took the whole flow down with it. Exactly what the wrapper was supposed to prevent. I asked the agent whether the feature was even using it. It said no. So I went and looked myself, and there it was. The wrapper I wanted, written and fully tested, sitting in the repo and never once called. It had built exactly what I asked for and never plugged it in. So I added a check for dead code.
+
+Do I still read the code? Not the way I used to. That sounds like I stopped caring, but it is the opposite. Most of what I used to catch by reading, a signal now catches for me. Dead code. A function quietly doing ten unrelated things. A file that has grown too big. The signal fires, and then I go and look, deep, exactly where it points. I can even set an agent loose to find where we broke the principles the team already agreed on, and then I decide which breaks are exceptions and which are debt. That is analysis I never had the time for when I was the one typing.
+
+None of it works if you forget what the thing actually is.
+
+Most models are trained on public code, and by volume most public code is somebody's first project or a todo app. The default is the median, and the median is not good enough. It also takes the easy way out, every time. Ask it to fix a failing validation and it might just delete the validation. Ask it for a hundred records and it will loop a hundred times instead of asking once. It is not lazy the way a tired person is lazy. It is lazy in a stranger way. It optimizes for the literal thing you asked and does not care how it got there. Screenshots that were never real. Tests that test nothing. Code that never runs. Every one of those is the same bug. It did exactly what I said and nothing I meant.
+
+I want to be fair, because it is easy to turn this into a panic. Mediocre code is not new. We shipped shortcuts under a deadline long before any of this, and I have pushed code I was not proud of plenty of times without an agent's help. The model did not invent the shortcut. It just makes it cheaper, and reaches for it far more often than I would.
+
+Taken often enough, those shortcuts add up. I ship more than I used to. More features, and yes, more bugs. So some weeks I ship nothing at all. I spend a day or two walking the signals, cleaning up what the pace left behind. If you do not budget for that, the mess wins quietly.
+
+Here is the uncomfortable part, and the honest one. None of this made me a better engineer. It made me more of whatever I already was. My rigor went up, infrastructure as code on day one of a throwaway project, test coverage I would have skipped, but only because I already knew what rigor looked like and could tell when the agent was faking it. Someone without that would have just gotten faster at making a mess. Which is why I would not read too much into one person's hundred days. The aggregate numbers on AI generated code are not pretty, more debt, more holes, and I believe them. It amplifies. You still have to bring something worth amplifying.
+
+So, a hundred days without an editor. I did not write the code, but I never stopped owning it. The typing was the part I could hand off. The rest, the judgment, the learning, the responsibility, only got heavier.
+
+You can delegate the work. You cannot delegate owning what you ship.
