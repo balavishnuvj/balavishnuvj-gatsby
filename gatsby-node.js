@@ -95,3 +95,20 @@ exports.onCreateNode = ({ node, actions, getNode }) => {
     })
   }
 }
+
+// Register babel-plugin-styled-components ourselves (previously provided by
+// gatsby-plugin-styled-components, which we removed because its SSR style
+// collection was not injecting critical CSS with styled-components v6, causing
+// a flash of unstyled content). SSR style extraction now lives in gatsby-ssr.js.
+exports.onCreateBabelConfig = ({ actions, stage }) => {
+  actions.setBabelPlugin({
+    name: `babel-plugin-styled-components`,
+    options: {
+      displayName: true,
+      fileName: true,
+      minify: true,
+      transpileTemplateLiterals: true,
+      ssr: stage === `build-html` || stage === `build-javascript`,
+    },
+  })
+}
